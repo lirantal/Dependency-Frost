@@ -2737,6 +2737,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadPedit("npmbox", "sprites/npmbox.pedit");
   loadPedit("rail", "sprites/rail.pedit");
   loadPedit("rail2", "sprites/rail.pedit");
+  loadPedit("Patch-Jumper", "sprites/Patch-Jumper.pedit");
   loadSprite("dog", "sprites/dog_brown.png", {
     sliceX: 3,
     sliceY: 2,
@@ -2754,7 +2755,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   });
   var score = 0;
   scene("game", () => {
-    const JUMP_FORCE = 1e3;
+    let helpers = ["Patch-Jumper"];
+    score = 0;
+    let JUMP_FORCE = 705;
     const FLOOR_HEIGHT = 48;
     const MOVE_SPEED = 200;
     gravity(2400);
@@ -2827,28 +2830,55 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       shake();
       go("lose");
     });
+    player.collides("Patch-Jumper", (element) => {
+      addKaboom(player.pos);
+      shake();
+      JUMP_FORCE = 1e3;
+      helperIndex = helpers.indexOf("Patch-Jumper");
+      helpers.splice(helperIndex, 1);
+      destroy(element);
+    });
     let railTimeout = 1;
     loop(1, () => {
-      let randomNumber = randi(0, 49);
-      console.log({ randomNumber });
-      if (railTimeout > 0) {
-        railTimeout -= 1;
-        return;
+      if (!helpers.includes("Patch-Jumper")) {
+        let randomNumber = randi(0, 49);
+        console.log({ randomNumber });
+        if (railTimeout > 0) {
+          railTimeout -= 1;
+          return;
+        }
+        if (randomNumber % 7 === 0) {
+          railTimeout = 1;
+          add([
+            sprite("rail2"),
+            origin("botleft"),
+            pos(width() + 50, height() - FLOOR_HEIGHT * 4),
+            move(LEFT, 180),
+            "rail",
+            scale(5),
+            area(),
+            fixed(),
+            solid()
+          ]);
+        }
       }
-      if (randomNumber % 7 === 0) {
-        railTimeout = 1;
-        add([
-          sprite("rail2"),
-          origin("botleft"),
-          pos(width() + 50, height() - FLOOR_HEIGHT * 4),
-          move(LEFT, 180),
-          "rail",
-          scale(5),
-          area(),
-          fixed(),
-          solid()
-        ]);
-      }
+    });
+    loop(12, () => {
+      wait(12, () => {
+        if (helpers.includes("Patch-Jumper")) {
+          const PatchJumper = add([
+            sprite("Patch-Jumper"),
+            area(),
+            origin("botleft"),
+            pos(width(), height() - FLOOR_HEIGHT),
+            move(LEFT, 240),
+            "Patch-Jumper",
+            fixed(),
+            solid(),
+            scale(1)
+          ]);
+        }
+      });
     });
     function spawnPackages() {
       const npmPackage = add([
@@ -2865,6 +2895,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         move(LEFT, 240),
         origin("botleft"),
         color(255, 255, 255),
+        "label",
         pos(width(), height() - 100)
       ]);
       wait(rand(0.8, 3.5), () => {
@@ -2874,9 +2905,24 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     __name(spawnPackages, "spawnPackages");
     spawnPackages();
   });
-  onUpdate("package", (pkg) => {
-    if (pkg.pos.x < 0) {
-      destroy(pkg);
+  onUpdate("Patch-Jumper", (element) => {
+    if (element.pos.x < 0) {
+      destroy(element);
+    }
+  });
+  onUpdate("package", (element) => {
+    if (element.pos.x < 0) {
+      destroy(element);
+    }
+  });
+  onUpdate("rail", (element) => {
+    if (element.pos.x < 0) {
+      destroy(element);
+    }
+  });
+  onUpdate("label", (element) => {
+    if (element.pos.x < 0) {
+      destroy(element);
     }
   });
   scene("lose", () => {

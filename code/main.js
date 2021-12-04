@@ -5,8 +5,10 @@ kaboom({crisp: true, background: [134, 135, 247]})
 loadSprite("background", "sprites/BG.png")
 loadSprite("bean", "sprites/bean.png")
 loadPedit("npmbox", "sprites/npmbox.pedit")
-loadPedit("rail", "sprites/rail.pedit");
-loadPedit("rail2", "sprites/rail.pedit");
+loadPedit("rail", "sprites/rail.pedit")
+loadPedit("rail2", "sprites/rail.pedit")
+// loadPedit("Patch-Rails", "sprites/Patch-Rails.pedit")
+loadPedit("Patch-Jumper", "sprites/Patch-Jumper.pedit")
 
 // original assets from:
 // https://opengameart.org/content/dog-run-stand-pee-6frames-46x27
@@ -24,9 +26,12 @@ loadSprite("dog", "sprites/dog_brown.png", {
 })
 
 let score = 0
-scene("game", () => {
 
-  const JUMP_FORCE = 1000
+scene("game", () => {
+  let helpers = ['Patch-Jumper']
+  score = 0
+
+  let JUMP_FORCE = 705
   const FLOOR_HEIGHT = 48
   const MOVE_SPEED = 200
   
@@ -144,31 +149,69 @@ scene("game", () => {
     go("lose")
   })
 
+  player.collides("Patch-Jumper", (element) => {
+    addKaboom(player.pos)
+    shake()
+
+    // upgrade the jump force!
+    JUMP_FORCE = 1000
+    
+    // remove the helper now that it's received
+    helperIndex = helpers.indexOf('Patch-Jumper')
+    helpers.splice(helperIndex, 1)
+
+    destroy(element)
+  })
+
 
   let railTimeout = 1
   loop(1, () => {
-    let randomNumber = randi(0,49)
-    console.log({randomNumber})
+    // if this helper doesn't exist in our array box, then it means the user
+    // already took it. great for them, let's add some rails now to the screen
+    if (!helpers.includes('Patch-Jumper')) {
+      // print rails to the screen
+      let randomNumber = randi(0,49)
+      console.log({randomNumber})
 
-    if (railTimeout > 0) {
-      railTimeout -= 1
-      return
-    }
+      if (railTimeout > 0) {
+        railTimeout -= 1
+        return
+      }
 
-    if (randomNumber % 7 === 0) {
-      railTimeout = 1
-      add([
-        sprite("rail2"),
-        origin('botleft'),
-        pos(width() + 50, height() - (FLOOR_HEIGHT * 4)),
-        move(LEFT, 180),
-        "rail",
-        scale(5),
-        area(),
-        fixed(),
-        solid()
-      ])
+      if (randomNumber % 7 === 0) {
+        railTimeout = 1
+        add([
+          sprite("rail2"),
+          origin('botleft'),
+          pos(width() + 50, height() - (FLOOR_HEIGHT * 4)),
+          move(LEFT, 180),
+          "rail",
+          scale(5),
+          area(),
+          fixed(),
+          solid()
+        ])
+      }
     }
+  })
+
+  loop(12, () => {
+    wait(12, () => {
+      // show the patch jumper helper
+      if (helpers.includes('Patch-Jumper')) {
+        const PatchJumper = add([
+          sprite("Patch-Jumper"),
+          area(),
+          origin('botleft'),
+          pos(width(), height() - FLOOR_HEIGHT),
+          move(LEFT, 240),
+          "Patch-Jumper",
+          fixed(),
+          solid(),
+          scale(1)
+        ])
+      }
+    })
   })
 
   function spawnPackages() {
@@ -187,6 +230,7 @@ scene("game", () => {
       move(LEFT, 240),
       origin('botleft'),
       color(255, 255, 255),
+      'label',
       pos(width(), height() - 100)
     ])
 
@@ -198,11 +242,30 @@ scene("game", () => {
   spawnPackages()
 })
 
-onUpdate("package", (pkg) => {
-  if (pkg.pos.x < 0) {
-    destroy(pkg)
+onUpdate("Patch-Jumper", (element) => {
+  if (element.pos.x < 0) {
+    destroy(element)
   }
 })
+
+onUpdate("package", (element) => {
+  if (element.pos.x < 0) {
+    destroy(element)
+  }
+})
+
+onUpdate("rail", (element) => {
+  if (element.pos.x < 0) {
+    destroy(element)
+  }
+})
+
+onUpdate("label", (element) => {
+  if (element.pos.x < 0) {
+    destroy(element)
+  }
+})
+
 
 scene("lose", () => {
   add([
