@@ -3,7 +3,7 @@ import kaboom from "kaboom"
 // initialize context
 kaboom({crisp: true, background: [134, 135, 247]})
 loadSprite("background", "sprites/BG.png")
-loadSprite("bean", "sprites/bean.png")
+// loadSprite("bean", "sprites/bean.png")
 loadPedit("npmbox", "sprites/npmbox.pedit")
 loadPedit("rail", "sprites/rail.pedit")
 loadPedit("rail2", "sprites/rail.pedit")
@@ -77,16 +77,6 @@ scene("game", () => {
     "player",
   ])
   player.flipX(true)
-
-  // const traveler = add([
-  //   sprite("dog", {animeSpeed: 100, anime: 'idle'}),
-  //   pos(80, 140),
-  //   origin("center"),
-  //   scale(1.8),
-  //   area(),
-  //   body(),
-  // ])
-  // traveler.flipX(true)
   
   // enable camera position movement
   // player.action(() => {
@@ -117,14 +107,10 @@ scene("game", () => {
 
   onKeyPress('right', () => {
     player.flipX(true)
-    // traveler.scale.x = 1
-    // traveler.play('run')
   })
 
   onKeyPress('left', () => {
     player.flipX(false)
-    // traveler.scale.x = -1
-    // traveler.play('run')
   })
 
   onKeyRelease('left', () => {
