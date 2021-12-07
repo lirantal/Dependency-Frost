@@ -2734,7 +2734,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   Es({ crisp: true, background: [134, 135, 247] });
   loadSprite("background", "sprites/BG.png");
   loadSprite("bean", "sprites/bean.png");
-  loadPedit("npmbox", "sprites/npmbox.pedit");
+  loadPedit("npmbox", "sprites/npmbox-animated.pedit");
   loadPedit("rail", "sprites/rail.pedit");
   loadPedit("rail2", "sprites/rail.pedit");
   loadPedit("Patch-Jumper", "sprites/Patch-Jumper.pedit");
@@ -2754,8 +2754,11 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
   });
   var score = 0;
+  var packagesAnimType = "regular";
+  var playerProtected = false;
+  var scorePhase2 = 500;
   scene("game", () => {
-    let helpers = ["Patch-Jumper"];
+    let helpers = ["Patch-Jumper", "Protected"];
     score = 0;
     let JUMP_FORCE = 705;
     const FLOOR_HEIGHT = 48;
@@ -2825,10 +2828,12 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     onKeyDown("left", () => {
       player.move(-MOVE_SPEED, 0);
     });
-    player.collides("package", () => {
-      addKaboom(player.pos);
-      shake();
-      go("lose");
+    player.onCollide("package", (element) => {
+      if (playerProtected !== true) {
+        addKaboom(player.pos);
+        shake();
+        go("lose");
+      }
     });
     player.collides("Patch-Jumper", (element) => {
       addKaboom(player.pos);
@@ -2838,11 +2843,47 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       helpers.splice(helperIndex, 1);
       destroy(element);
     });
+    player.collides("bean", (element) => {
+      helperIndex = helpers.indexOf("Protected");
+      helpers.splice(helperIndex, 1);
+      addKaboom(player.pos);
+      shake(5);
+      destroy(element);
+      packagesAnimType = "weak";
+      playerProtected = true;
+      every("package", (element2) => {
+        element2.play(packagesAnimType);
+      });
+      wait(5, () => {
+        packagesAnimType = "regular";
+        every("package", (element2) => {
+          element2.play(packagesAnimType);
+        });
+        playerProtected = false;
+      });
+    });
+    loop(5, () => {
+      if (score >= scorePhase2) {
+        if (helpers.includes("Protected")) {
+          const bean = add([
+            sprite("bean"),
+            area(),
+            origin("botleft"),
+            pos(width(), 80),
+            move(LEFT, 150),
+            "bean",
+            fixed(),
+            solid(),
+            scale(1),
+            body()
+          ]);
+        }
+      }
+    });
     let railTimeout = 1;
     loop(1, () => {
       if (!helpers.includes("Patch-Jumper")) {
         let randomNumber = randi(0, 49);
-        console.log({ randomNumber });
         if (railTimeout > 0) {
           railTimeout -= 1;
           return;
@@ -2880,9 +2921,29 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         }
       });
     });
+    onUpdate("Patch-Jumper", (element) => {
+      if (element.pos.x < 0) {
+        destroy(element);
+      }
+    });
+    onUpdate("package", (element) => {
+      if (element.pos.x < 0) {
+        destroy(element);
+      }
+    });
+    onUpdate("rail", (element) => {
+      if (element.pos.x < -300) {
+        destroy(element);
+      }
+    });
+    onUpdate("label", (element) => {
+      if (element.pos.x < 0) {
+        destroy(element);
+      }
+    });
     function spawnPackages() {
       const npmPackage = add([
-        sprite("npmbox"),
+        sprite("npmbox", { anim: packagesAnimType }),
         area(),
         origin("botleft"),
         pos(width(), height() - FLOOR_HEIGHT),
@@ -2904,26 +2965,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     __name(spawnPackages, "spawnPackages");
     spawnPackages();
-  });
-  onUpdate("Patch-Jumper", (element) => {
-    if (element.pos.x < 0) {
-      destroy(element);
-    }
-  });
-  onUpdate("package", (element) => {
-    if (element.pos.x < 0) {
-      destroy(element);
-    }
-  });
-  onUpdate("rail", (element) => {
-    if (element.pos.x < 0) {
-      destroy(element);
-    }
-  });
-  onUpdate("label", (element) => {
-    if (element.pos.x < 0) {
-      destroy(element);
-    }
   });
   scene("lose", () => {
     add([

@@ -3,8 +3,8 @@ import kaboom from "kaboom"
 // initialize context
 kaboom({crisp: true, background: [134, 135, 247]})
 loadSprite("background", "sprites/BG.png")
-// loadSprite("bean", "sprites/bean.png")
-loadPedit("npmbox", "sprites/npmbox.pedit")
+loadSprite("bean", "sprites/bean.png")
+loadPedit("npmbox", "sprites/npmbox-animated.pedit")
 loadPedit("rail", "sprites/rail.pedit")
 loadPedit("rail2", "sprites/rail.pedit")
 // loadPedit("Patch-Rails", "sprites/Patch-Rails.pedit")
@@ -26,9 +26,17 @@ loadSprite("dog", "sprites/dog_brown.png", {
 })
 
 let score = 0
+let packagesAnimType = 'regular'
+let playerProtected = false
+
+const scorePhase1 = 0
+const scorePhase2 = 500
+const scorePhase3 = 2000
+const scorePhase4 = 3000
+const scorePhase5 = 5000
 
 scene("game", () => {
-  let helpers = ['Patch-Jumper']
+  let helpers = ['Patch-Jumper', 'Protected']
   score = 0
 
   let JUMP_FORCE = 705
@@ -129,10 +137,12 @@ scene("game", () => {
     player.move(-MOVE_SPEED, 0)
   })
 
-  player.collides("package", () => {
-    addKaboom(player.pos)
-    shake()
-    go("lose")
+  player.onCollide("package", (element) => {
+    if (playerProtected !== true) {
+      addKaboom(player.pos)
+      shake()
+      go("lose")
+    }
   })
 
   player.collides("Patch-Jumper", (element) => {
@@ -150,6 +160,54 @@ scene("game", () => {
   })
 
 
+  player.collides("bean", (element) => {
+    // remove the helper now that it's received
+    helperIndex = helpers.indexOf('Protected')
+    helpers.splice(helperIndex, 1)
+
+    addKaboom(player.pos)
+    shake(5)
+    destroy(element)
+
+    // new spawned packages should have the "weak" animation
+    packagesAnimType = 'weak'
+    playerProtected = true
+    every('package', (element) => {
+      element.play(packagesAnimType)
+    })
+    // and after 5 seconds it expires back to "regular"
+    wait(5, () => {
+      packagesAnimType = 'regular'
+      every('package', (element) => {
+        element.play(packagesAnimType)
+      })
+      playerProtected = false
+    })
+  })
+
+
+
+  loop(5, () => {
+        // Phase2 begins
+    if (score >= scorePhase2) {
+          if (helpers.includes('Protected')) {
+            const bean = add([
+              sprite("bean"),
+              area(),
+              origin('botleft'),
+              pos(width(), 80),
+              move(LEFT, 150),
+              "bean",
+              fixed(),
+              solid(),
+              scale(1),
+              body()
+            ])
+          }
+    }
+    // Phase2 ends
+  })
+
   let railTimeout = 1
   loop(1, () => {
     // if this helper doesn't exist in our array box, then it means the user
@@ -157,7 +215,6 @@ scene("game", () => {
     if (!helpers.includes('Patch-Jumper')) {
       // print rails to the screen
       let randomNumber = randi(0,49)
-      console.log({randomNumber})
 
       if (railTimeout > 0) {
         railTimeout -= 1
@@ -200,9 +257,35 @@ scene("game", () => {
     })
   })
 
+  onUpdate("Patch-Jumper", (element) => {
+    if (element.pos.x < 0) {
+      destroy(element)
+    }
+  })
+
+  onUpdate("package", (element) => {
+    if (element.pos.x < 0) {
+      destroy(element)
+    }
+  })
+
+  onUpdate("rail", (element) => {
+    // scaled element to be 5x so need to account for bigger size
+    // of just element.width
+    if (element.pos.x < -300) {
+      destroy(element)
+    }
+  })
+
+  onUpdate("label", (element) => {
+    if (element.pos.x < 0) {
+      destroy(element)
+    }
+  })
+
   function spawnPackages() {
     const npmPackage = add([
-      sprite("npmbox"),
+      sprite("npmbox", {anim: packagesAnimType}),
       area(),
       origin('botleft'),
       pos(width(), height() - FLOOR_HEIGHT),
@@ -226,31 +309,10 @@ scene("game", () => {
   }
 
   spawnPackages()
-})
 
-onUpdate("Patch-Jumper", (element) => {
-  if (element.pos.x < 0) {
-    destroy(element)
-  }
-})
+}) //end game scene
 
-onUpdate("package", (element) => {
-  if (element.pos.x < 0) {
-    destroy(element)
-  }
-})
 
-onUpdate("rail", (element) => {
-  if (element.pos.x < 0) {
-    destroy(element)
-  }
-})
-
-onUpdate("label", (element) => {
-  if (element.pos.x < 0) {
-    destroy(element)
-  }
-})
 
 
 scene("lose", () => {
