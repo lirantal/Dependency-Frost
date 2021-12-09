@@ -2731,7 +2731,12 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   }, "default");
 
   // code/main.js
-  Es({ crisp: true, background: [134, 135, 247] });
+  Es({
+    crisp: true,
+    width: 945,
+    height: 540,
+    background: [134, 135, 247]
+  });
   loadSprite("background", "sprites/BG.png");
   loadPedit("npmbox", "sprites/npmbox-animated.pedit");
   loadPedit("rail", "sprites/rail.pedit");
@@ -2756,7 +2761,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   var score = 0;
   var packagesAnimType = "regular";
   var playerProtected = false;
-  var scorePhase2 = 500;
+  var scorePhase2 = 200;
   scene("game", () => {
     let helpers = ["Patch-Jumper", "Protected"];
     score = 0;
@@ -2894,7 +2899,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
             "Mode-protected",
             fixed(),
             solid(),
-            scale(1),
+            scale(2.5),
             body()
           ]);
         }

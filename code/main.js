@@ -1,7 +1,12 @@
 import kaboom from "kaboom"
 
 // initialize context
-kaboom({crisp: true, background: [134, 135, 247]})
+kaboom({
+  crisp: true,
+  width: 945,
+  height: 540,
+  background: [134, 135, 247]
+})
 loadSprite("background", "sprites/BG.png")
 // loadSprite("bean", "sprites/bean.png")
 
@@ -32,7 +37,7 @@ let packagesAnimType = 'regular'
 let playerProtected = false
 
 const scorePhase1 = 0
-const scorePhase2 = 500
+const scorePhase2 = 1500
 const scorePhase3 = 2000
 const scorePhase4 = 3000
 const scorePhase5 = 5000
@@ -223,7 +228,7 @@ scene("game", () => {
               "Mode-protected",
               fixed(),
               solid(),
-              scale(1),
+              scale(2.5),
               body()
             ])
           }
