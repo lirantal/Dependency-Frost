@@ -2733,11 +2733,11 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   // code/main.js
   Es({ crisp: true, background: [134, 135, 247] });
   loadSprite("background", "sprites/BG.png");
-  loadSprite("bean", "sprites/bean.png");
   loadPedit("npmbox", "sprites/npmbox-animated.pedit");
   loadPedit("rail", "sprites/rail.pedit");
   loadPedit("rail2", "sprites/rail.pedit");
   loadPedit("Patch-Jumper", "sprites/Patch-Jumper.pedit");
+  loadPedit("Mode-protected", "sprites/Mode-protected.pedit");
   loadSprite("dog", "sprites/dog_brown.png", {
     sliceX: 3,
     sliceY: 2,
@@ -2843,7 +2843,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       helpers.splice(helperIndex, 1);
       destroy(element);
     });
-    player.collides("bean", (element) => {
+    player.collides("Mode-protected", (element) => {
       helperIndex = helpers.indexOf("Protected");
       helpers.splice(helperIndex, 1);
       addKaboom(player.pos);
@@ -2862,16 +2862,36 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         playerProtected = false;
       });
     });
+    let colorama = 0;
+    let coloramaIndex = [BLUE, MAGENTA];
+    let radiusProtector = 40;
+    onDraw(() => {
+      if (playerProtected) {
+        drawCircle({
+          pos: vec2(player.pos.x + 40, player.pos.y + 20),
+          radius: radiusProtector,
+          opacity: 0,
+          outline: { color: coloramaIndex[colorama], width: 1 }
+        });
+      }
+    });
+    loop(0.1, () => {
+      colorama = Number(!colorama);
+      radiusProtector++;
+      if (radiusProtector >= 55) {
+        radiusProtector = 45;
+      }
+    });
     loop(5, () => {
       if (score >= scorePhase2) {
         if (helpers.includes("Protected")) {
-          const bean = add([
-            sprite("bean"),
+          add([
+            sprite("Mode-protected"),
             area(),
             origin("botleft"),
             pos(width(), 80),
             move(LEFT, 150),
-            "bean",
+            "Mode-protected",
             fixed(),
             solid(),
             scale(1),

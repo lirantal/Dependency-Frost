@@ -3,12 +3,14 @@ import kaboom from "kaboom"
 // initialize context
 kaboom({crisp: true, background: [134, 135, 247]})
 loadSprite("background", "sprites/BG.png")
-loadSprite("bean", "sprites/bean.png")
+// loadSprite("bean", "sprites/bean.png")
+
 loadPedit("npmbox", "sprites/npmbox-animated.pedit")
 loadPedit("rail", "sprites/rail.pedit")
 loadPedit("rail2", "sprites/rail.pedit")
 // loadPedit("Patch-Rails", "sprites/Patch-Rails.pedit")
 loadPedit("Patch-Jumper", "sprites/Patch-Jumper.pedit")
+loadPedit("Mode-protected", "sprites/Mode-protected.pedit");
 
 // original assets from:
 // https://opengameart.org/content/dog-run-stand-pee-6frames-46x27
@@ -160,7 +162,7 @@ scene("game", () => {
   })
 
 
-  player.collides("bean", (element) => {
+  player.collides("Mode-protected", (element) => {
     // remove the helper now that it's received
     helperIndex = helpers.indexOf('Protected')
     helpers.splice(helperIndex, 1)
@@ -185,19 +187,40 @@ scene("game", () => {
     })
   })
 
+  let colorama = 0
+  let coloramaIndex = [BLUE, MAGENTA]
+  let radiusProtector = 40
 
+  onDraw(() => {
+    if (playerProtected) {
+      drawCircle({
+          pos: vec2(player.pos.x + 40, player.pos.y + 20),
+          radius: radiusProtector,
+          opacity: 0,
+          outline: { color: coloramaIndex[colorama], width: 1 },
+      })
+    }
+	})
+
+  loop(0.1, () => {
+    colorama = Number(!colorama)
+    radiusProtector++
+    if (radiusProtector >= 55) {
+      radiusProtector = 45
+    }
+  })
 
   loop(5, () => {
         // Phase2 begins
     if (score >= scorePhase2) {
           if (helpers.includes('Protected')) {
-            const bean = add([
-              sprite("bean"),
+            add([
+              sprite("Mode-protected"),
               area(),
               origin('botleft'),
               pos(width(), 80),
               move(LEFT, 150),
-              "bean",
+              "Mode-protected",
               fixed(),
               solid(),
               scale(1),
@@ -210,6 +233,9 @@ scene("game", () => {
 
   let railTimeout = 1
   loop(1, () => {
+
+    
+
     // if this helper doesn't exist in our array box, then it means the user
     // already took it. great for them, let's add some rails now to the screen
     if (!helpers.includes('Patch-Jumper')) {
@@ -309,6 +335,8 @@ scene("game", () => {
   }
 
   spawnPackages()
+
+
 
 }) //end game scene
 
