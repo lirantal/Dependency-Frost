@@ -11,11 +11,13 @@ loadSprite("background", "sprites/BG.png")
 // loadSprite("bean", "sprites/bean.png")
 
 loadPedit("npmbox", "sprites/npmbox-animated.pedit")
+loadPedit("npmbox-dev", "sprites/npmbox-dev.pedit");
 loadPedit("rail", "sprites/rail.pedit")
 loadPedit("rail2", "sprites/rail.pedit")
 // loadPedit("Patch-Rails", "sprites/Patch-Rails.pedit")
 loadPedit("Patch-Jumper", "sprites/Patch-Jumper.pedit")
 loadPedit("Mode-protected", "sprites/Mode-protected.pedit");
+loadPedit("Mode-filterdevs", "sprites/Mode-filterdevs.pedit");
 
 // original assets from:
 // https://opengameart.org/content/dog-run-stand-pee-6frames-46x27
@@ -35,15 +37,16 @@ loadSprite("dog", "sprites/dog_brown.png", {
 let score = 0
 let packagesAnimType = 'regular'
 let playerProtected = false
+let devDepsCounter = 0
 
 const scorePhase1 = 0
-const scorePhase2 = 1500
-const scorePhase3 = 2000
-const scorePhase4 = 3000
+const scorePhase2 = 800
+const scorePhase3 = 2500
+const scorePhase4 = 4000
 const scorePhase5 = 5000
 
 scene("game", () => {
-  let helpers = ['Patch-Jumper', 'Protected']
+  let helpers = ['Patch-Jumper', 'Protected', 'Mode-filterdevs']
   score = 0
 
   let JUMP_FORCE = 705
@@ -166,6 +169,11 @@ scene("game", () => {
     destroy(element)
   })
 
+  player.onCollide("DevDeps", (element) => {
+    addKaboom(player.pos)
+    shake()
+    go("lose")
+  })
 
   player.collides("Mode-protected", (element) => {
     // remove the helper now that it's received
@@ -192,6 +200,29 @@ scene("game", () => {
     })
   })
 
+  player.collides("Mode-filterdevs", (element) => {
+    // remove the helper now that it's received
+    helperIndex = helpers.indexOf('Mode-filterdevs')
+    helpers.splice(helperIndex, 1)
+
+    addKaboom(player.pos)
+    shake(5)
+    destroy(element)
+
+    destroyAll("DevDeps")
+    // every('dev', (element) => {
+    //   element.play(packagesAnimType)
+    // })
+    // // and after 5 seconds it expires back to "regular"
+    // wait(5, () => {
+    //   packagesAnimType = 'regular'
+    //   every('package', (element) => {
+    //     element.play(packagesAnimType)
+    //   })
+    //   playerProtected = false
+    // })
+  })
+
   let colorama = 0
   let coloramaIndex = [BLUE, MAGENTA]
   let radiusProtector = 40
@@ -216,30 +247,70 @@ scene("game", () => {
   })
 
   loop(5, () => {
-        // Phase2 begins
-    if (score >= scorePhase2) {
-          if (helpers.includes('Protected')) {
-            add([
-              sprite("Mode-protected"),
-              area(),
-              origin('botleft'),
-              pos(width(), 80),
-              move(LEFT, 150),
-              "Mode-protected",
-              fixed(),
-              solid(),
-              scale(2.5),
-              body()
-            ])
-          }
+    // Phase2 begins
+    if (score >= scorePhase2 && score <= scorePhase3) {
+      if (helpers.includes('Protected')) {
+        add([
+          sprite("Mode-protected"),
+          area(),
+          origin('botleft'),
+          pos(width(), 80),
+          move(LEFT, 150),
+          "Mode-protected",
+          fixed(),
+          solid(),
+          scale(2.5),
+          body()
+        ])
+      }
     }
     // Phase2 ends
   })
 
+  loop(8, () => {
+    // Phase3 begins
+    if (score >= scorePhase3 && score <= scorePhase4 && devDepsCounter >= 4) {
+      if (helpers.includes('Mode-filterdevs')) {
+        add([
+          sprite("Mode-filterdevs"),
+          area(),
+          origin('botleft'),
+          pos(width(), 80),
+          move(LEFT, 150),
+          "Mode-filterdevs",
+          fixed(),
+          solid(),
+          scale(2.5),
+          body()
+        ])
+      }
+    }
+    // Phase3 ends
+  })
+
+  loop(1.7, () => {
+    // Phase3 begins
+    if (score >= scorePhase3 && score <= scorePhase4) {
+      if (helpers.includes('Mode-filterdevs')) {
+        devDepsCounter++
+        add([
+          sprite("npmbox-dev"),
+          area(),
+          origin('botleft'),
+          pos(width(), height() - FLOOR_HEIGHT),
+          move(LEFT, 150),
+          "DevDeps",
+          fixed(),
+          solid(),
+          scale(0.5)
+        ])
+      }
+    }
+    // Phase3 ends
+  })
+
   let railTimeout = 1
   loop(1, () => {
-
-    
 
     // if this helper doesn't exist in our array box, then it means the user
     // already took it. great for them, let's add some rails now to the screen
@@ -340,8 +411,6 @@ scene("game", () => {
   }
 
   spawnPackages()
-
-
 
 }) //end game scene
 

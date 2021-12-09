@@ -2739,10 +2739,12 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   });
   loadSprite("background", "sprites/BG.png");
   loadPedit("npmbox", "sprites/npmbox-animated.pedit");
+  loadPedit("npmbox-dev", "sprites/npmbox-dev.pedit");
   loadPedit("rail", "sprites/rail.pedit");
   loadPedit("rail2", "sprites/rail.pedit");
   loadPedit("Patch-Jumper", "sprites/Patch-Jumper.pedit");
   loadPedit("Mode-protected", "sprites/Mode-protected.pedit");
+  loadPedit("Mode-filterdevs", "sprites/Mode-filterdevs.pedit");
   loadSprite("dog", "sprites/dog_brown.png", {
     sliceX: 3,
     sliceY: 2,
@@ -2761,9 +2763,12 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   var score = 0;
   var packagesAnimType = "regular";
   var playerProtected = false;
-  var scorePhase2 = 200;
+  var devDepsCounter = 0;
+  var scorePhase2 = 800;
+  var scorePhase3 = 2500;
+  var scorePhase4 = 4e3;
   scene("game", () => {
-    let helpers = ["Patch-Jumper", "Protected"];
+    let helpers = ["Patch-Jumper", "Protected", "Mode-filterdevs"];
     score = 0;
     let JUMP_FORCE = 705;
     const FLOOR_HEIGHT = 48;
@@ -2848,6 +2853,11 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       helpers.splice(helperIndex, 1);
       destroy(element);
     });
+    player.onCollide("DevDeps", (element) => {
+      addKaboom(player.pos);
+      shake();
+      go("lose");
+    });
     player.collides("Mode-protected", (element) => {
       helperIndex = helpers.indexOf("Protected");
       helpers.splice(helperIndex, 1);
@@ -2866,6 +2876,14 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         });
         playerProtected = false;
       });
+    });
+    player.collides("Mode-filterdevs", (element) => {
+      helperIndex = helpers.indexOf("Mode-filterdevs");
+      helpers.splice(helperIndex, 1);
+      addKaboom(player.pos);
+      shake(5);
+      destroy(element);
+      destroyAll("DevDeps");
     });
     let colorama = 0;
     let coloramaIndex = [BLUE, MAGENTA];
@@ -2888,7 +2906,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }
     });
     loop(5, () => {
-      if (score >= scorePhase2) {
+      if (score >= scorePhase2 && score <= scorePhase3) {
         if (helpers.includes("Protected")) {
           add([
             sprite("Mode-protected"),
@@ -2901,6 +2919,42 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
             solid(),
             scale(2.5),
             body()
+          ]);
+        }
+      }
+    });
+    loop(8, () => {
+      if (score >= scorePhase3 && score <= scorePhase4 && devDepsCounter >= 4) {
+        if (helpers.includes("Mode-filterdevs")) {
+          add([
+            sprite("Mode-filterdevs"),
+            area(),
+            origin("botleft"),
+            pos(width(), 80),
+            move(LEFT, 150),
+            "Mode-filterdevs",
+            fixed(),
+            solid(),
+            scale(2.5),
+            body()
+          ]);
+        }
+      }
+    });
+    loop(1.7, () => {
+      if (score >= scorePhase3 && score <= scorePhase4) {
+        if (helpers.includes("Mode-filterdevs")) {
+          devDepsCounter++;
+          add([
+            sprite("npmbox-dev"),
+            area(),
+            origin("botleft"),
+            pos(width(), height() - FLOOR_HEIGHT),
+            move(LEFT, 150),
+            "DevDeps",
+            fixed(),
+            solid(),
+            scale(0.5)
           ]);
         }
       }
