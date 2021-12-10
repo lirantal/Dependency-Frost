@@ -3,8 +3,8 @@ import kaboom from "kaboom"
 // initialize context
 kaboom({
   crisp: true,
-  width: 945,
-  height: 540,
+  width: 1280,
+  height: 720,
   background: [134, 135, 247]
 })
 loadSprite("background", "sprites/BG.png")
@@ -18,6 +18,21 @@ loadPedit("rail2", "sprites/rail.pedit")
 loadPedit("Patch-Jumper", "sprites/Patch-Jumper.pedit")
 loadPedit("Mode-protected", "sprites/Mode-protected.pedit");
 loadPedit("Mode-filterdevs", "sprites/Mode-filterdevs.pedit");
+
+//
+loadSound("jump-fast", "sounds/fast-simple-chop-5-6270.mp3");
+loadSound("score", "sounds/score.mp3");
+loadSound("soundThunder", "sounds/mixkit-distant-thunder-explosion-1278.wav");
+loadSound("soundPackageCollide", "sounds/mixkit-epic-impact-afar-explosion-2782.wav");
+loadSound("soundItem1", "sounds/mixkit-fast-small-sweep-transition-166.wav");
+loadSound("soundItem2", "sounds/mixkit-fairy-teleport-868.wav");
+loadSound("soundItem3", "sounds/mixkit-magic-sparkle-whoosh-2350.wav");
+// loadSound("game-background-music", "sounds/robotik-love-2137.mp3");
+
+loadSound("game-background-music2", "sounds/game-background-music2.mp3");
+const gameMusic = play('game-background-music2', {loop: true, volume: 0.6})
+const soundThunder = play('soundThunder', {loop: false})
+//
 
 // original assets from:
 // https://opengameart.org/content/dog-run-stand-pee-6frames-46x27
@@ -46,6 +61,8 @@ const scorePhase4 = 4000
 const scorePhase5 = 5000
 
 scene("game", () => {
+  gameMusic.play()
+
   let helpers = ['Patch-Jumper', 'Protected', 'Mode-filterdevs']
   score = 0
 
@@ -60,7 +77,7 @@ scene("game", () => {
   add([
     sprite("background"),
     pos(0, 0),
-    scale(0.6)
+    scale(0.9)
   ])
 
   const scoreLabel = add([
@@ -113,6 +130,7 @@ scene("game", () => {
 
   function jump() {
     if (player.grounded()) {
+      play('jump-fast', {loop: false})
       player.jump(JUMP_FORCE)
       player.play('idle')
     }
@@ -150,12 +168,14 @@ scene("game", () => {
   player.onCollide("package", (element) => {
     if (playerProtected !== true) {
       addKaboom(player.pos)
+      play('soundPackageCollide', {loop: false})
       shake()
       go("lose")
     }
   })
 
   player.collides("Patch-Jumper", (element) => {
+    play('soundItem3', {loop: false})
     addKaboom(player.pos)
     shake()
 
@@ -171,11 +191,13 @@ scene("game", () => {
 
   player.onCollide("DevDeps", (element) => {
     addKaboom(player.pos)
+    play('soundPackageCollide', {loop: false})
     shake()
     go("lose")
   })
 
   player.collides("Mode-protected", (element) => {
+    play('soundItem2', {loop: false})
     // remove the helper now that it's received
     helperIndex = helpers.indexOf('Protected')
     helpers.splice(helperIndex, 1)
@@ -201,6 +223,7 @@ scene("game", () => {
   })
 
   player.collides("Mode-filterdevs", (element) => {
+    play('soundItem3', {loop: false})
     // remove the helper now that it's received
     helperIndex = helpers.indexOf('Mode-filterdevs')
     helpers.splice(helperIndex, 1)
@@ -265,6 +288,12 @@ scene("game", () => {
       }
     }
     // Phase2 ends
+  })
+
+  // play thunder sound effect
+  loop(15, () => {
+    soundThunder.stop()
+    soundThunder.play()
   })
 
   loop(8, () => {
@@ -418,6 +447,7 @@ scene("game", () => {
 
 
 scene("lose", () => {
+  gameMusic.stop()
   add([
 		text("Game Over"),
 		pos(center()),

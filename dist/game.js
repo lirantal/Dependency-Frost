@@ -2733,8 +2733,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   // code/main.js
   Es({
     crisp: true,
-    width: 945,
-    height: 540,
+    width: 1280,
+    height: 720,
     background: [134, 135, 247]
   });
   loadSprite("background", "sprites/BG.png");
@@ -2745,6 +2745,16 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadPedit("Patch-Jumper", "sprites/Patch-Jumper.pedit");
   loadPedit("Mode-protected", "sprites/Mode-protected.pedit");
   loadPedit("Mode-filterdevs", "sprites/Mode-filterdevs.pedit");
+  loadSound("jump-fast", "sounds/fast-simple-chop-5-6270.mp3");
+  loadSound("score", "sounds/score.mp3");
+  loadSound("soundThunder", "sounds/mixkit-distant-thunder-explosion-1278.wav");
+  loadSound("soundPackageCollide", "sounds/mixkit-epic-impact-afar-explosion-2782.wav");
+  loadSound("soundItem1", "sounds/mixkit-fast-small-sweep-transition-166.wav");
+  loadSound("soundItem2", "sounds/mixkit-fairy-teleport-868.wav");
+  loadSound("soundItem3", "sounds/mixkit-magic-sparkle-whoosh-2350.wav");
+  loadSound("game-background-music2", "sounds/game-background-music2.mp3");
+  var gameMusic = play("game-background-music2", { loop: true, volume: 0.6 });
+  var soundThunder = play("soundThunder", { loop: false });
   loadSprite("dog", "sprites/dog_brown.png", {
     sliceX: 3,
     sliceY: 2,
@@ -2768,6 +2778,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   var scorePhase3 = 2500;
   var scorePhase4 = 4e3;
   scene("game", () => {
+    gameMusic.play();
     let helpers = ["Patch-Jumper", "Protected", "Mode-filterdevs"];
     score = 0;
     let JUMP_FORCE = 705;
@@ -2777,7 +2788,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     add([
       sprite("background"),
       pos(0, 0),
-      scale(0.6)
+      scale(0.9)
     ]);
     const scoreLabel = add([
       text(score),
@@ -2812,6 +2823,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     });
     function jump() {
       if (player.grounded()) {
+        play("jump-fast", { loop: false });
         player.jump(JUMP_FORCE);
         player.play("idle");
       }
@@ -2841,11 +2853,13 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     player.onCollide("package", (element) => {
       if (playerProtected !== true) {
         addKaboom(player.pos);
+        play("soundPackageCollide", { loop: false });
         shake();
         go("lose");
       }
     });
     player.collides("Patch-Jumper", (element) => {
+      play("soundItem3", { loop: false });
       addKaboom(player.pos);
       shake();
       JUMP_FORCE = 1e3;
@@ -2855,10 +2869,12 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     });
     player.onCollide("DevDeps", (element) => {
       addKaboom(player.pos);
+      play("soundPackageCollide", { loop: false });
       shake();
       go("lose");
     });
     player.collides("Mode-protected", (element) => {
+      play("soundItem2", { loop: false });
       helperIndex = helpers.indexOf("Protected");
       helpers.splice(helperIndex, 1);
       addKaboom(player.pos);
@@ -2878,6 +2894,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       });
     });
     player.collides("Mode-filterdevs", (element) => {
+      play("soundItem3", { loop: false });
       helperIndex = helpers.indexOf("Mode-filterdevs");
       helpers.splice(helperIndex, 1);
       addKaboom(player.pos);
@@ -2922,6 +2939,10 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
           ]);
         }
       }
+    });
+    loop(15, () => {
+      soundThunder.stop();
+      soundThunder.play();
     });
     loop(8, () => {
       if (score >= scorePhase3 && score <= scorePhase4 && devDepsCounter >= 4) {
@@ -3046,6 +3067,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     spawnPackages();
   });
   scene("lose", () => {
+    gameMusic.stop();
     add([
       text("Game Over"),
       pos(center()),
