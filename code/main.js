@@ -7,6 +7,7 @@ kaboom({
   height: 720,
   background: [134, 135, 247]
 })
+
 loadSprite("background", "sprites/BG.png")
 // loadSprite("bean", "sprites/bean.png")
 
@@ -28,10 +29,9 @@ loadSound("soundItem1", "sounds/mixkit-fast-small-sweep-transition-166.wav");
 loadSound("soundItem2", "sounds/mixkit-fairy-teleport-868.wav");
 loadSound("soundItem3", "sounds/mixkit-magic-sparkle-whoosh-2350.wav");
 // loadSound("game-background-music", "sounds/robotik-love-2137.mp3");
-
 loadSound("game-background-music2", "sounds/game-background-music2.mp3");
 const gameMusic = play('game-background-music2', {loop: true, volume: 0.6})
-const soundThunder = play('soundThunder', {loop: false})
+const soundThunder = play('soundThunder', {loop: false, volume: 0.9})
 //
 
 // original assets from:
@@ -54,16 +54,21 @@ let packagesAnimType = 'regular'
 let playerProtected = false
 let devDepsCounter = 0
 
-const scorePhase1 = 0
-const scorePhase2 = 800
-const scorePhase3 = 2500
-const scorePhase4 = 4000
-const scorePhase5 = 5000
+// jump mode:
+const scorePhase1 = 1200
+// protected mode:
+const scorePhase2 = 2000
+// devdeps:
+const scorePhase3 = 2800
+// currently unused:
+const scorePhase4 = 5000
+const scorePhase5 = 10000
 
 scene("game", () => {
+  let SPAWN_PACKAGES_TOP_SPEED = 3.5
   gameMusic.play()
 
-  let helpers = ['Patch-Jumper', 'Protected', 'Mode-filterdevs']
+  let helpers = ['Patch-Jumper', 'Protected',  'Protected', 'Mode-filterdevs', 'Mode-filterdevs', 'Protected', 'Mode-filterdevs']
   score = 0
 
   let JUMP_FORCE = 705
@@ -233,17 +238,6 @@ scene("game", () => {
     destroy(element)
 
     destroyAll("DevDeps")
-    // every('dev', (element) => {
-    //   element.play(packagesAnimType)
-    // })
-    // // and after 5 seconds it expires back to "regular"
-    // wait(5, () => {
-    //   packagesAnimType = 'regular'
-    //   every('package', (element) => {
-    //     element.play(packagesAnimType)
-    //   })
-    //   playerProtected = false
-    // })
   })
 
   let colorama = 0
@@ -278,7 +272,7 @@ scene("game", () => {
           area(),
           origin('botleft'),
           pos(width(), 80),
-          move(LEFT, 150),
+          move(LEFT, 130),
           "Mode-protected",
           fixed(),
           solid(),
@@ -296,9 +290,9 @@ scene("game", () => {
     soundThunder.play()
   })
 
-  loop(8, () => {
+  loop(4, () => {
     // Phase3 begins
-    if (score >= scorePhase3 && score <= scorePhase4 && devDepsCounter >= 4) {
+    if (score >= scorePhase3 && devDepsCounter >= 4) {
       if (helpers.includes('Mode-filterdevs')) {
         add([
           sprite("Mode-filterdevs"),
@@ -319,7 +313,7 @@ scene("game", () => {
 
   loop(1.7, () => {
     // Phase3 begins
-    if (score >= scorePhase3 && score <= scorePhase4) {
+    if (score >= scorePhase3) {
       if (helpers.includes('Mode-filterdevs')) {
         devDepsCounter++
         add([
@@ -345,14 +339,18 @@ scene("game", () => {
     // already took it. great for them, let's add some rails now to the screen
     if (!helpers.includes('Patch-Jumper')) {
       // print rails to the screen
-      let randomNumber = randi(0,49)
+      let randomNumber = randi(0, 30)
 
       if (railTimeout > 0) {
         railTimeout -= 1
         return
       }
 
-      if (randomNumber % 7 === 0) {
+      if (randomNumber % 5 === 0) {
+        // on the first rail apperance we want to increase
+        // the speed in which packages are being spawned
+        SPAWN_PACKAGES_TOP_SPEED = 2.2
+
         railTimeout = 1
         add([
           sprite("rail2"),
@@ -369,24 +367,25 @@ scene("game", () => {
     }
   })
 
-  loop(12, () => {
-    wait(12, () => {
+  loop(3, () => {
+    // Phase1 begins
+    if (score >= scorePhase1 && score <= scorePhase2) {
       // show the patch jumper helper
       if (helpers.includes('Patch-Jumper')) {
         const PatchJumper = add([
           sprite("Patch-Jumper"),
           area(),
           origin('botleft'),
-          pos(width(), height() - FLOOR_HEIGHT),
-          move(LEFT, 240),
+          pos(width(), height() - (FLOOR_HEIGHT * 2.5)),
+          move(LEFT, 200),
           "Patch-Jumper",
           fixed(),
           solid(),
           scale(1)
         ])
       }
-    })
-  })
+    }
+  })  
 
   onUpdate("Patch-Jumper", (element) => {
     if (element.pos.x < 0) {
@@ -414,6 +413,24 @@ scene("game", () => {
     }
   })
 
+  onUpdate("DevDeps", (element) => {
+    if (element.pos.x < 0) {
+      destroy(element)
+    }
+  })
+
+  onUpdate("Mode-filterdevs", (element) => {
+    if (element.pos.x < 0) {
+      destroy(element)
+    }
+  })
+
+  onUpdate("Mode-protected", (element) => {
+    if (element.pos.x < 0) {
+      destroy(element)
+    }
+  })
+
   function spawnPackages() {
     const npmPackage = add([
       sprite("npmbox", {anim: packagesAnimType}),
@@ -434,7 +451,7 @@ scene("game", () => {
       pos(width(), height() - 100)
     ])
 
-    wait(rand(0.8, 3.5), () => {
+    wait(rand(0.8, SPAWN_PACKAGES_TOP_SPEED), () => {
       spawnPackages()
     })
   }
@@ -442,9 +459,6 @@ scene("game", () => {
   spawnPackages()
 
 }) //end game scene
-
-
-
 
 scene("lose", () => {
   gameMusic.stop()

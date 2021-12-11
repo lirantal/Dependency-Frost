@@ -2754,7 +2754,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadSound("soundItem3", "sounds/mixkit-magic-sparkle-whoosh-2350.wav");
   loadSound("game-background-music2", "sounds/game-background-music2.mp3");
   var gameMusic = play("game-background-music2", { loop: true, volume: 0.6 });
-  var soundThunder = play("soundThunder", { loop: false });
+  var soundThunder = play("soundThunder", { loop: false, volume: 0.9 });
   loadSprite("dog", "sprites/dog_brown.png", {
     sliceX: 3,
     sliceY: 2,
@@ -2774,12 +2774,13 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   var packagesAnimType = "regular";
   var playerProtected = false;
   var devDepsCounter = 0;
-  var scorePhase2 = 800;
-  var scorePhase3 = 2500;
-  var scorePhase4 = 4e3;
+  var scorePhase1 = 1200;
+  var scorePhase2 = 2e3;
+  var scorePhase3 = 2800;
   scene("game", () => {
+    let SPAWN_PACKAGES_TOP_SPEED = 3.5;
     gameMusic.play();
-    let helpers = ["Patch-Jumper", "Protected", "Mode-filterdevs"];
+    let helpers = ["Patch-Jumper", "Protected", "Protected", "Mode-filterdevs", "Mode-filterdevs", "Protected", "Mode-filterdevs"];
     score = 0;
     let JUMP_FORCE = 705;
     const FLOOR_HEIGHT = 48;
@@ -2930,7 +2931,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
             area(),
             origin("botleft"),
             pos(width(), 80),
-            move(LEFT, 150),
+            move(LEFT, 130),
             "Mode-protected",
             fixed(),
             solid(),
@@ -2944,8 +2945,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       soundThunder.stop();
       soundThunder.play();
     });
-    loop(8, () => {
-      if (score >= scorePhase3 && score <= scorePhase4 && devDepsCounter >= 4) {
+    loop(4, () => {
+      if (score >= scorePhase3 && devDepsCounter >= 4) {
         if (helpers.includes("Mode-filterdevs")) {
           add([
             sprite("Mode-filterdevs"),
@@ -2963,7 +2964,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }
     });
     loop(1.7, () => {
-      if (score >= scorePhase3 && score <= scorePhase4) {
+      if (score >= scorePhase3) {
         if (helpers.includes("Mode-filterdevs")) {
           devDepsCounter++;
           add([
@@ -2983,12 +2984,13 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     let railTimeout = 1;
     loop(1, () => {
       if (!helpers.includes("Patch-Jumper")) {
-        let randomNumber = randi(0, 49);
+        let randomNumber = randi(0, 30);
         if (railTimeout > 0) {
           railTimeout -= 1;
           return;
         }
-        if (randomNumber % 7 === 0) {
+        if (randomNumber % 5 === 0) {
+          SPAWN_PACKAGES_TOP_SPEED = 2.2;
           railTimeout = 1;
           add([
             sprite("rail2"),
@@ -3004,22 +3006,22 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         }
       }
     });
-    loop(12, () => {
-      wait(12, () => {
+    loop(3, () => {
+      if (score >= scorePhase1 && score <= scorePhase2) {
         if (helpers.includes("Patch-Jumper")) {
           const PatchJumper = add([
             sprite("Patch-Jumper"),
             area(),
             origin("botleft"),
-            pos(width(), height() - FLOOR_HEIGHT),
-            move(LEFT, 240),
+            pos(width(), height() - FLOOR_HEIGHT * 2.5),
+            move(LEFT, 200),
             "Patch-Jumper",
             fixed(),
             solid(),
             scale(1)
           ]);
         }
-      });
+      }
     });
     onUpdate("Patch-Jumper", (element) => {
       if (element.pos.x < 0) {
@@ -3037,6 +3039,21 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }
     });
     onUpdate("label", (element) => {
+      if (element.pos.x < 0) {
+        destroy(element);
+      }
+    });
+    onUpdate("DevDeps", (element) => {
+      if (element.pos.x < 0) {
+        destroy(element);
+      }
+    });
+    onUpdate("Mode-filterdevs", (element) => {
+      if (element.pos.x < 0) {
+        destroy(element);
+      }
+    });
+    onUpdate("Mode-protected", (element) => {
       if (element.pos.x < 0) {
         destroy(element);
       }
@@ -3059,7 +3076,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         "label",
         pos(width(), height() - 100)
       ]);
-      wait(rand(0.8, 3.5), () => {
+      wait(rand(0.8, SPAWN_PACKAGES_TOP_SPEED), () => {
         spawnPackages();
       });
     }
