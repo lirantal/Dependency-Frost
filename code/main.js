@@ -484,4 +484,23 @@ scene("lose", () => {
   }
 })
 
-go("game")
+  scene('instructions', () => {
+    gameMusic.stop()
+    soundThunder.stop()
+
+    add([
+      text('Dependency Frost\n\nwoof woof\nYou are patch, the dog\nYour mission is to avoid vulnerable package versions\nCollect super powers along your journey\n\n\nPress space to start game!', {
+        size: 28,
+        font: 'apl386'
+      }),
+      pos(width()/2, height()/2),
+      origin('center')
+    ]);
+
+    keyPress('space', () => {
+      go('game');
+    });
+  })
+
+go("instructions")
+
