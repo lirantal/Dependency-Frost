@@ -489,7 +489,7 @@ scene("lose", () => {
     soundThunder.stop()
 
     add([
-      text('Dependency Frost\n\nwoof woof\nYou are patch, the dog\nYour mission is to avoid vulnerable package versions\nCollect super powers along your journey\n\n\nPress space to start game!', {
+      text('Dependency Frost\n\n\nYou are patch, the dog\nYour mission is to avoid vulnerable package versions\nCollect super powers along your journey\n\n\n\n\nPress space to start game!', {
         size: 28,
         font: 'apl386'
       }),
