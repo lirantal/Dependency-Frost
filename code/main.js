@@ -28,10 +28,11 @@ loadSound("soundPackageCollide", "sounds/mixkit-epic-impact-afar-explosion-2782.
 loadSound("soundItem1", "sounds/mixkit-fast-small-sweep-transition-166.wav");
 loadSound("soundItem2", "sounds/mixkit-fairy-teleport-868.wav");
 loadSound("soundItem3", "sounds/mixkit-magic-sparkle-whoosh-2350.wav");
-// loadSound("game-background-music", "sounds/robotik-love-2137.mp3");
 loadSound("game-background-music2", "sounds/game-background-music2.mp3");
+loadSound("game-nonplay", "sounds/deep-ambient-version-60s-9889.mp3");
 const gameMusic = play('game-background-music2', {loop: true, volume: 0.6})
 const soundThunder = play('soundThunder', {loop: false, volume: 0.9})
+const gameMusicIntro = play('game-nonplay', {loop: true, volume: 0.7})
 //
 
 // original assets from:
@@ -65,6 +66,8 @@ const scorePhase4 = 5000
 const scorePhase5 = 10000
 
 scene("game", () => {
+  gameMusicIntro.stop()
+
   let SPAWN_PACKAGES_TOP_SPEED = 3.5
   gameMusic.play()
 
@@ -265,7 +268,7 @@ scene("game", () => {
 
   loop(5, () => {
     // Phase2 begins
-    if (score >= scorePhase2 && score <= scorePhase3) {
+    if (score >= scorePhase2) {
       if (helpers.includes('Protected')) {
         add([
           sprite("Mode-protected"),
@@ -292,7 +295,8 @@ scene("game", () => {
 
   loop(4, () => {
     // Phase3 begins
-    if (score >= scorePhase3 && devDepsCounter >= 4) {
+    if (score >= scorePhase3 && devDepsCounter >= 6) {
+      devDepsCounter = 0
       if (helpers.includes('Mode-filterdevs')) {
         add([
           sprite("Mode-filterdevs"),
@@ -462,6 +466,8 @@ scene("game", () => {
 
 scene("lose", () => {
   gameMusic.stop()
+  gameMusicIntro.play()
+
   add([
 		text("Game Over"),
 		pos(center()),
@@ -487,6 +493,7 @@ scene("lose", () => {
   scene('instructions', () => {
     gameMusic.stop()
     soundThunder.stop()
+    gameMusicIntro.play()
 
     add([
       text('Dependency Frost\n\n\nYou are patch, the dog\nYour mission is to avoid vulnerable package versions\nCollect super powers along your journey\n\n\n\n\nPress space to start game!', {
@@ -498,8 +505,10 @@ scene("lose", () => {
     ]);
 
     keyPress('space', () => {
+      score = 0
       go('game');
     });
+    
   })
 
 go("instructions")

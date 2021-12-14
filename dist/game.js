@@ -2753,8 +2753,10 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadSound("soundItem2", "sounds/mixkit-fairy-teleport-868.wav");
   loadSound("soundItem3", "sounds/mixkit-magic-sparkle-whoosh-2350.wav");
   loadSound("game-background-music2", "sounds/game-background-music2.mp3");
+  loadSound("game-nonplay", "sounds/deep-ambient-version-60s-9889.mp3");
   var gameMusic = play("game-background-music2", { loop: true, volume: 0.6 });
   var soundThunder = play("soundThunder", { loop: false, volume: 0.9 });
+  var gameMusicIntro = play("game-nonplay", { loop: true, volume: 0.7 });
   loadSprite("dog", "sprites/dog_brown.png", {
     sliceX: 3,
     sliceY: 2,
@@ -2778,6 +2780,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   var scorePhase2 = 2e3;
   var scorePhase3 = 2800;
   scene("game", () => {
+    gameMusicIntro.stop();
     let SPAWN_PACKAGES_TOP_SPEED = 3.5;
     gameMusic.play();
     let helpers = ["Patch-Jumper", "Protected", "Protected", "Mode-filterdevs", "Mode-filterdevs", "Protected", "Mode-filterdevs"];
@@ -2924,7 +2927,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }
     });
     loop(5, () => {
-      if (score >= scorePhase2 && score <= scorePhase3) {
+      if (score >= scorePhase2) {
         if (helpers.includes("Protected")) {
           add([
             sprite("Mode-protected"),
@@ -2946,7 +2949,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       soundThunder.play();
     });
     loop(4, () => {
-      if (score >= scorePhase3 && devDepsCounter >= 4) {
+      if (score >= scorePhase3 && devDepsCounter >= 6) {
+        devDepsCounter = 0;
         if (helpers.includes("Mode-filterdevs")) {
           add([
             sprite("Mode-filterdevs"),
@@ -3085,6 +3089,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   });
   scene("lose", () => {
     gameMusic.stop();
+    gameMusicIntro.play();
     add([
       text("Game Over"),
       pos(center()),
@@ -3106,6 +3111,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   scene("instructions", () => {
     gameMusic.stop();
     soundThunder.stop();
+    gameMusicIntro.play();
     add([
       text("Dependency Frost\n\n\nYou are patch, the dog\nYour mission is to avoid vulnerable package versions\nCollect super powers along your journey\n\n\n\n\nPress space to start game!", {
         size: 28,
@@ -3115,6 +3121,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       origin("center")
     ]);
     keyPress("space", () => {
+      score = 0;
       go("game");
     });
   });
