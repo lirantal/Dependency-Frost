@@ -11,13 +11,12 @@ kaboom({
 })
 
 loadSprite("background", "sprites/BG.png")
-// loadSprite("bean", "sprites/bean.png")
 
 loadPedit("npmbox", "sprites/npmbox-animated.pedit")
 loadPedit("npmbox-dev", "sprites/npmbox-dev.pedit");
 loadPedit("rail", "sprites/rail.pedit")
 loadPedit("rail2", "sprites/rail.pedit")
-// loadPedit("Patch-Rails", "sprites/Patch-Rails.pedit")
+
 loadPedit("Patch-Jumper", "sprites/Patch-Jumper.pedit")
 loadPedit("Mode-protected", "sprites/Mode-protected.pedit");
 loadPedit("Mode-filterdevs", "sprites/Mode-filterdevs.pedit");
@@ -504,23 +503,6 @@ scene("lose", () => {
     go("game")
   }
 })
-
-// scene('instructions', () => {
-//   add([
-//     text('Dependency Frost\n\n\nYou are patch, the dog\nYour mission is to avoid vulnerable package versions\nCollect super powers along your journey\n\n\n\n\nPress space to start game!', {
-//       size: 28,
-//       font: 'apl386'
-//     }),
-//     pos(width()/2, height()/2),
-//     origin('center')
-//   ]);
-
-//   keyPress('space', () => {
-//     score = 0
-//     go('game');
-//   });
-  
-// })
 
 scene('credits-0', () => {
   gameMusic.stop()
