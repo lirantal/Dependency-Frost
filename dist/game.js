@@ -2735,7 +2735,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     crisp: true,
     width: 1280,
     height: 720,
-    background: [134, 135, 247]
+    background: [134, 135, 247],
+    scale: 1
   });
   loadSprite("background", "sprites/BG.png");
   loadPedit("npmbox", "sprites/npmbox-animated.pedit");
@@ -2745,6 +2746,17 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadPedit("Patch-Jumper", "sprites/Patch-Jumper.pedit");
   loadPedit("Mode-protected", "sprites/Mode-protected.pedit");
   loadPedit("Mode-filterdevs", "sprites/Mode-filterdevs.pedit");
+  loadSprite("dog-doberman", "sprites/dog-doberman.png", {
+    sliceX: 4,
+    sliceY: 1,
+    anims: {
+      idle: {
+        from: 0,
+        to: 3,
+        loop: true
+      }
+    }
+  });
   loadSound("jump-fast", "sounds/fast-simple-chop-5-6270.mp3");
   loadSound("score", "sounds/score.mp3");
   loadSound("soundThunder", "sounds/mixkit-distant-thunder-explosion-1278.wav");
@@ -2756,7 +2768,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadSound("game-nonplay", "sounds/deep-ambient-version-60s-9889.mp3");
   var gameMusic = play("game-background-music2", { loop: true, volume: 0.6 });
   var soundThunder = play("soundThunder", { loop: false, volume: 0.9 });
-  var gameMusicIntro = play("game-nonplay", { loop: true, volume: 0.7 });
+  var gameMusicIntro;
   loadSprite("dog", "sprites/dog_brown.png", {
     sliceX: 3,
     sliceY: 2,
@@ -3108,23 +3120,105 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       go("game");
     }, "restartGame");
   });
-  scene("instructions", () => {
+  scene("credits-0", () => {
     gameMusic.stop();
     soundThunder.stop();
-    gameMusicIntro.play();
-    add([
-      text("Dependency Frost\n\n\nYou are patch, the dog\nYour mission is to avoid vulnerable package versions\nCollect super powers along your journey\n\n\n\n\nPress space to start game!", {
-        size: 28,
-        font: "apl386"
-      }),
-      pos(width() / 2, height() / 2),
-      origin("center")
-    ]);
+    wait(1, () => {
+      add([
+        text("press space to begin", {
+          size: 28,
+          font: "apl386"
+        }),
+        pos(width() / 2, height() / 2),
+        origin("center")
+      ]);
+    });
+    onKeyPress("space", () => {
+      gameMusicIntro = play("game-nonplay", { loop: true, volume: 0.7 });
+      go("credits-1");
+    });
+  });
+  scene("credits-1", () => {
+    wait(4, () => {
+      add([
+        text("a Snyk production", {
+          size: 28,
+          font: "apl386"
+        }),
+        pos(width() / 2, height() / 2),
+        origin("center")
+      ]);
+    });
+    wait(7, () => {
+      add([
+        pos(width() / 2, height() - height() * 0.4),
+        sprite("dog-doberman", { anim: "idle" }),
+        rotate(0),
+        area(),
+        origin("center"),
+        scale(3),
+        cleanup()
+      ]);
+    });
+    wait(13, () => {
+      go("intro-1");
+    });
+  });
+  scene("intro-1", () => {
+    wait(0, () => {
+      add([
+        text("Dependency Frost", {
+          size: 38,
+          font: "apl386"
+        }),
+        pos(width() / 2, height() / 4),
+        origin("center")
+      ]);
+    });
+    wait(3, () => {
+      add([
+        text("\n\n\n\nYou are patch, the dog", {
+          size: 28,
+          font: "apl386"
+        }),
+        pos(width() / 2, height() / 2),
+        origin("center")
+      ]);
+    });
+    wait(5, () => {
+      add([
+        text("\n\n\n\n\n\nYour mission is to avoid vulnerable package versions", {
+          size: 28,
+          font: "apl386"
+        }),
+        pos(width() / 2, height() / 2),
+        origin("center")
+      ]);
+    });
+    wait(7, () => {
+      add([
+        text("\n\n\n\n\n\n\n\nCollect super powers along your journey", {
+          size: 28,
+          font: "apl386"
+        }),
+        pos(width() / 2, height() / 2),
+        origin("center")
+      ]);
+    });
+    wait(9, () => {
+      add([
+        text("press space to continue", {
+          size: 22,
+          font: "apl386"
+        }),
+        pos(width() / 2, height() - height() * 0.1),
+        origin("center")
+      ]);
+    });
     keyPress("space", () => {
-      score = 0;
       go("game");
     });
   });
-  go("instructions");
+  go("credits-0");
 })();
 //# sourceMappingURL=game.js.map
