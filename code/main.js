@@ -79,6 +79,10 @@ const scorePhase3 = 2800
 const scorePhase4 = 5000
 const scorePhase5 = 10000
 
+function getPackageRandomSize() {
+  return rand(0.7, 1.4)
+}
+
 scene("game", () => {
   gameMusicIntro.stop()
 
@@ -466,7 +470,8 @@ scene("game", () => {
       origin('botleft'),
       color(255, 255, 255),
       'label',
-      pos(width(), height() - 100)
+      pos(width(), height() - 100),
+      scale(getPackageRandomSize())
     ])
 
     wait(rand(0.8, SPAWN_PACKAGES_TOP_SPEED), () => {

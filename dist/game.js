@@ -2792,6 +2792,10 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   var scorePhase1 = 1200;
   var scorePhase2 = 2e3;
   var scorePhase3 = 2800;
+  function getPackageRandomSize() {
+    return rand(0.7, 1.4);
+  }
+  __name(getPackageRandomSize, "getPackageRandomSize");
   scene("game", () => {
     gameMusicIntro.stop();
     let SPAWN_PACKAGES_TOP_SPEED = 3.5;
@@ -3091,7 +3095,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         origin("botleft"),
         color(255, 255, 255),
         "label",
-        pos(width(), height() - 100)
+        pos(width(), height() - 100),
+        scale(getPackageRandomSize())
       ]);
       wait(rand(0.8, SPAWN_PACKAGES_TOP_SPEED), () => {
         spawnPackages();
