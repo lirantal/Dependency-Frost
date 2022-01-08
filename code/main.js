@@ -6,7 +6,8 @@ kaboom({
   width: 1280,
   height: 720,
   background: [134, 135, 247],
-  scale: 1
+  scale: 1,
+  canvas: document.getElementById('game'),
 })
 
 loadSprite("background", "sprites/BG.png")
@@ -526,6 +527,7 @@ scene('credits-0', () => {
   soundThunder.stop()
 
   wait(1, () => {
+    focus()
     add([  
       text('press space to begin', {
         size: 28,

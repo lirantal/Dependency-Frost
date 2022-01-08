@@ -2736,7 +2736,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     width: 1280,
     height: 720,
     background: [134, 135, 247],
-    scale: 1
+    scale: 1,
+    canvas: document.getElementById("game")
   });
   loadSprite("background", "sprites/BG.png");
   loadPedit("npmbox", "sprites/npmbox-animated.pedit");
@@ -3124,6 +3125,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     gameMusic.stop();
     soundThunder.stop();
     wait(1, () => {
+      focus();
       add([
         text("press space to begin", {
           size: 28,
