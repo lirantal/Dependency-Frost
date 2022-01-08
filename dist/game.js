@@ -2792,12 +2792,180 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   var scorePhase1 = 1200;
   var scorePhase2 = 2e3;
   var scorePhase3 = 2800;
+  var vulnerablePackagesList = [
+    {
+      name: "node-forge",
+      cve: "CVE-2022-0122",
+      vulnerability: "Open Redirect",
+      link: "https://security.snyk.io/vuln/SNYK-JS-NODEFORGE-2330875"
+    },
+    {
+      name: "uppy",
+      cve: "CVE-2022-0086",
+      vulnerability: "Server-side Request Forgery",
+      link: "https://security.snyk.io/vuln/SNYK-JS-UPPY-2329723"
+    },
+    {
+      name: "mermaid",
+      cve: "CVE-2021-43861",
+      vulnerability: "Cross-site Scripting",
+      link: "https://security.snyk.io/vuln/SNYK-JS-MERMAID-2328372"
+    },
+    {
+      name: "momnet",
+      cve: "SNYK-JS-MOMNET-2324797",
+      vulnerability: "Malicious Package",
+      link: "https://security.snyk.io/vuln/SNYK-JS-MOMNET-2324797"
+    },
+    {
+      name: "js-data",
+      cve: "CVE-2021-23574",
+      vulnerability: "Prototype Pollution",
+      link: "https://security.snyk.io/vuln/SNYK-JS-JSDATA-1584361"
+    },
+    {
+      name: "json-2-csv",
+      cve: "SNYK-JS-JSON2CSV-1932013",
+      vulnerability: "CSV Injection",
+      link: "https://security.snyk.io/vuln/SNYK-JS-JSON2CSV-1932013"
+    },
+    {
+      name: "wafer-form",
+      cve: "SNYK-JS-WAFERFORM-2313722",
+      vulnerability: "Malicious Package",
+      link: "https://security.snyk.io/vuln/SNYK-JS-WAFERFORM-2313722"
+    },
+    {
+      name: "md-to-pdf",
+      cve: "CVE-2021-23639",
+      vulnerability: "Remote Code Execution",
+      link: "https://security.snyk.io/vuln/SNYK-JS-MDTOPDF-1657880"
+    },
+    {
+      name: "http-server-node",
+      cve: "CVE-2021-23797",
+      vulnerability: "Directory Traversal",
+      link: "https://security.snyk.io/vuln/SNYK-JS-HTTPSERVERNODE-1727656"
+    },
+    {
+      name: "next",
+      cve: "CVE-2021-43803",
+      vulnerability: "Denial of Service",
+      link: "https://security.snyk.io/vuln/SNYK-JS-NEXT-2312745"
+    },
+    {
+      name: "github-todos",
+      cve: "CVE-2021-44684",
+      vulnerability: "Command Injection",
+      link: "https://security.snyk.io/vuln/SNYK-JS-GITHUBTODOS-2311792"
+    },
+    {
+      name: "hexo",
+      cve: "CVE-2021-25987",
+      vulnerability: "Cross-site Scripting",
+      link: "https://security.snyk.io/vuln/SNYK-JS-HEXO-1932976"
+    },
+    {
+      name: "json-schema",
+      cve: "CVE-2021-3918",
+      vulnerability: "Prototype Pollution",
+      link: "https://security.snyk.io/vuln/SNYK-JS-JSONSCHEMA-1920922"
+    },
+    {
+      name: "coa",
+      cve: "SNYK-JS-COA-1911118",
+      vulnerability: "Malicious Package",
+      link: "https://security.snyk.io/vuln/SNYK-JS-COA-1911118"
+    },
+    {
+      name: "rc",
+      cve: "SNYK-JS-RC-1911120",
+      vulnerability: "Malicious Package",
+      link: "https://security.snyk.io/vuln/SNYK-JS-RC-1911120"
+    },
+    {
+      name: "tinymce",
+      cve: "SNYK-JS-TINYMCE-1910225",
+      vulnerability: "Cross-site Scripting",
+      link: "https://security.snyk.io/vuln/SNYK-JS-TINYMCE-1910225"
+    },
+    {
+      name: "jquery-ui",
+      cve: "CVE-2021-41184",
+      vulnerability: "Cross-site Scripting",
+      link: "https://security.snyk.io/vuln/SNYK-JS-JQUERYUI-1767175"
+    },
+    {
+      name: "fastify-static",
+      cve: "CVCVE-2021-2296E",
+      vulnerability: "Open Redirect",
+      link: "https://security.snyk.io/vuln/SNYK-JS-FASTIFYSTATIC-1728398"
+    },
+    {
+      name: "teddy",
+      cve: "CVE-2021-23447",
+      vulnerability: "Cross-site Scripting",
+      link: "https://security.snyk.io/vuln/SNYK-JS-TEDDY-1579557"
+    },
+    {
+      name: "marked",
+      cve: "CVE-2016-10531",
+      vulnerability: "Cross-site Scripting",
+      link: "https://security.snyk.io/vuln/npm:marked:20150520"
+    },
+    {
+      name: "dustjs-linkedin",
+      cve: "npm:dustjs-linkedin:20160819",
+      vulnerability: "Code Injection",
+      link: "https://security.snyk.io/vuln/npm:dustjs-linkedin:20160819"
+    },
+    {
+      name: "typeorm",
+      cve: "CVE-2020-8158",
+      vulnerability: "Prototype Pollution",
+      link: "https://security.snyk.io/vuln/SNYK-JS-TYPEORM-590152"
+    },
+    {
+      name: "moment",
+      cve: "CVE-2017-18214",
+      vulnerability: "Regular Expression Denial of Service",
+      link: "https://security.snyk.io/vuln/npm:moment:20170905"
+    },
+    {
+      name: "react-bootstrap-table",
+      cve: "CVE-2021-23398",
+      vulnerability: "Cross-site Scripting",
+      link: "https://security.snyk.io/vuln/SNYK-JS-REACTBOOTSTRAPTABLE-1314285"
+    },
+    {
+      name: "react-tooltip",
+      cve: "SNYK-JS-REACTTOOLTIP-72363",
+      vulnerability: "Cross-site Scripting",
+      link: "https://security.snyk.io/vuln/SNYK-JS-REACTTOOLTIP-72363"
+    },
+    {
+      name: "react-svg",
+      cve: "npm:react-svg:20180427",
+      vulnerability: "Cross-site Scripting",
+      link: "https://security.snyk.io/vuln/npm:react-svg:20180427"
+    },
+    {
+      name: "jspdf",
+      cve: "CVE-2021-23353",
+      vulnerability: "Regular Expression Denial of Service",
+      link: "https://security.snyk.io/vuln/SNYK-JS-JSPDF-1073626"
+    }
+  ];
+  function getRandomPackageData() {
+    const maxRange = vulnerablePackagesList.length - 1;
+    return vulnerablePackagesList[randi(0, maxRange)];
+  }
+  __name(getRandomPackageData, "getRandomPackageData");
   function getPackageRandomSize() {
     return rand(0.7, 1.4);
   }
   __name(getPackageRandomSize, "getPackageRandomSize");
   scene("game", () => {
-    gameMusicIntro.stop();
     let SPAWN_PACKAGES_TOP_SPEED = 3.5;
     gameMusic.play();
     let helpers = ["Patch-Jumper", "Protected", "Protected", "Mode-filterdevs", "Mode-filterdevs", "Protected", "Mode-filterdevs"];
@@ -3089,13 +3257,14 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         "package",
         scale(1)
       ]);
+      const randomPackage = getRandomPackageData();
       add([
-        text("react", { size: "22", width: 120, font: "apl386" }),
+        text(randomPackage.name, { size: "22", width: 220, font: "apl386" }),
         move(LEFT, 240),
         origin("botleft"),
         color(255, 255, 255),
         "label",
-        pos(width(), height() - 100),
+        pos(width() - 20, height() - 100),
         scale(getPackageRandomSize())
       ]);
       wait(rand(0.8, SPAWN_PACKAGES_TOP_SPEED), () => {
