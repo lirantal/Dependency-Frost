@@ -2758,18 +2758,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }
     }
   });
-  loadSound("jump-fast", "sounds/fast-simple-chop-5-6270.mp3");
-  loadSound("score", "sounds/score.mp3");
-  loadSound("soundThunder", "sounds/mixkit-distant-thunder-explosion-1278.wav");
-  loadSound("soundPackageCollide", "sounds/mixkit-epic-impact-afar-explosion-2782.wav");
-  loadSound("soundItem1", "sounds/mixkit-fast-small-sweep-transition-166.wav");
-  loadSound("soundItem2", "sounds/mixkit-fairy-teleport-868.wav");
-  loadSound("soundItem3", "sounds/mixkit-magic-sparkle-whoosh-2350.wav");
-  loadSound("game-background-music2", "sounds/game-background-music2.mp3");
-  loadSound("game-nonplay", "sounds/deep-ambient-version-60s-9889.mp3");
-  var gameMusic = play("game-background-music2", { loop: true, volume: 0.6 });
-  var soundThunder = play("soundThunder", { loop: false, volume: 0.9 });
-  var gameMusicIntro;
   loadSprite("dog", "sprites/dog_brown.png", {
     sliceX: 3,
     sliceY: 2,
@@ -2785,6 +2773,18 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }
     }
   });
+  loadSound("jump-fast", "sounds/fast-simple-chop-5-6270.mp3");
+  loadSound("score", "sounds/score.mp3");
+  loadSound("soundThunder", "sounds/mixkit-distant-thunder-explosion-1278.wav");
+  loadSound("soundPackageCollide", "sounds/mixkit-epic-impact-afar-explosion-2782.wav");
+  loadSound("soundItem1", "sounds/mixkit-fast-small-sweep-transition-166.wav");
+  loadSound("soundItem2", "sounds/mixkit-fairy-teleport-868.wav");
+  loadSound("soundItem3", "sounds/mixkit-magic-sparkle-whoosh-2350.wav");
+  loadSound("game-background-music2", "sounds/game-background-music2.mp3");
+  loadSound("game-nonplay", "sounds/deep-ambient-version-60s-9889.mp3");
+  var gameMusic = play("game-background-music2", { loop: true, volume: 0.6 });
+  var soundThunder = play("soundThunder", { loop: false, volume: 0.9 });
+  var gameMusicIntro;
   var score = 0;
   var packagesAnimType = "regular";
   var playerProtected = false;
@@ -2966,6 +2966,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   }
   __name(getPackageRandomSize, "getPackageRandomSize");
   scene("game", () => {
+    gameMusicIntro.stop();
     let SPAWN_PACKAGES_TOP_SPEED = 3.5;
     gameMusic.play();
     let helpers = ["Patch-Jumper", "Protected", "Protected", "Mode-filterdevs", "Mode-filterdevs", "Protected", "Mode-filterdevs"];

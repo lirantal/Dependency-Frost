@@ -10,18 +10,19 @@ kaboom({
   canvas: document.getElementById('game'),
 })
 
+// graphics from https://opengameart.org/content/winter-platformer-game-tileset, license: CC0 public domain
 loadSprite("background", "sprites/BG.png")
 
+// Work created by me
 loadPedit("npmbox", "sprites/npmbox-animated.pedit")
 loadPedit("npmbox-dev", "sprites/npmbox-dev.pedit");
 loadPedit("rail", "sprites/rail.pedit")
 loadPedit("rail2", "sprites/rail.pedit")
-
 loadPedit("Patch-Jumper", "sprites/Patch-Jumper.pedit")
 loadPedit("Mode-protected", "sprites/Mode-protected.pedit");
 loadPedit("Mode-filterdevs", "sprites/Mode-filterdevs.pedit");
 
-// graphics from craftpix.net, license: https://craftpix.net/file-licenses/
+// graphics from craftpix.net, license: https://craftpix.net/file-licenses/ (see freebie products section)
 loadSprite("dog-doberman", "sprites/dog-doberman.png", {
   sliceX: 4,
   sliceY: 1,
@@ -34,22 +35,6 @@ loadSprite("dog-doberman", "sprites/dog-doberman.png", {
   }
 });
 
-//
-loadSound("jump-fast", "sounds/fast-simple-chop-5-6270.mp3");
-loadSound("score", "sounds/score.mp3");
-loadSound("soundThunder", "sounds/mixkit-distant-thunder-explosion-1278.wav");
-loadSound("soundPackageCollide", "sounds/mixkit-epic-impact-afar-explosion-2782.wav");
-loadSound("soundItem1", "sounds/mixkit-fast-small-sweep-transition-166.wav");
-loadSound("soundItem2", "sounds/mixkit-fairy-teleport-868.wav");
-loadSound("soundItem3", "sounds/mixkit-magic-sparkle-whoosh-2350.wav");
-loadSound("game-background-music2", "sounds/game-background-music2.mp3");
-loadSound("game-nonplay", "sounds/deep-ambient-version-60s-9889.mp3");
-const gameMusic = play('game-background-music2', {loop: true, volume: 0.6})
-const soundThunder = play('soundThunder', {loop: false, volume: 0.9})
-
-let gameMusicIntro
-
-// original assets from:
 // https://opengameart.org/content/dog-run-stand-pee-6frames-46x27
 loadSprite("dog", "sprites/dog_brown.png", {
   sliceX: 3,
@@ -63,6 +48,21 @@ loadSprite("dog", "sprites/dog_brown.png", {
     }
   }
 })
+
+// source music from mixkit: https://mixkit.co/free-stock-music/
+loadSound("jump-fast", "sounds/fast-simple-chop-5-6270.mp3");
+loadSound("score", "sounds/score.mp3");
+loadSound("soundThunder", "sounds/mixkit-distant-thunder-explosion-1278.wav");
+loadSound("soundPackageCollide", "sounds/mixkit-epic-impact-afar-explosion-2782.wav");
+loadSound("soundItem1", "sounds/mixkit-fast-small-sweep-transition-166.wav");
+loadSound("soundItem2", "sounds/mixkit-fairy-teleport-868.wav");
+loadSound("soundItem3", "sounds/mixkit-magic-sparkle-whoosh-2350.wav");
+loadSound("game-background-music2", "sounds/game-background-music2.mp3");
+loadSound("game-nonplay", "sounds/deep-ambient-version-60s-9889.mp3");
+const gameMusic = play('game-background-music2', {loop: true, volume: 0.6})
+const soundThunder = play('soundThunder', {loop: false, volume: 0.9})
+
+let gameMusicIntro
 
 let score = 0
 let packagesAnimType = 'regular'
@@ -254,7 +254,7 @@ function getPackageRandomSize() {
 }
 
 scene("game", () => {
-  // gameMusicIntro.stop()
+  gameMusicIntro.stop()
 
   let SPAWN_PACKAGES_TOP_SPEED = 3.5
   gameMusic.play()
