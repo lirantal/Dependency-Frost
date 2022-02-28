@@ -3,7 +3,7 @@ import kaboom from "kaboom"
 // initialize context
 kaboom({
   crisp: true,
-  width: 1280,
+  width: 1080,
   height: 720,
   background: [134, 135, 247],
   scale: 1,
@@ -657,8 +657,8 @@ scene("game", () => {
 }) //end game scene
 
 scene("lose", () => {
-  gameMusic.stop()
-  gameMusicIntro.play()
+  // gameMusic.stop()
+  // gameMusicIntro.play()
 
   add([
 		text("Game Over"),
@@ -670,6 +670,13 @@ scene("lose", () => {
 		text(score),
 		pos(width() / 2, height() / 2 + 120),
 		scale(2),
+		origin("center"),
+	])
+
+  add([
+		text('Media assets credit to: opengameart.org, craftpix.net and mixkit.co.'),
+		pos(width() / 2, height() / 2 + 320),
+		scale(0.3),
 		origin("center"),
 	])
 

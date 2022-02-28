@@ -2733,7 +2733,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   // code/main.js
   Es({
     crisp: true,
-    width: 1280,
+    width: 1080,
     height: 720,
     background: [134, 135, 247],
     scale: 1,
@@ -3276,8 +3276,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     spawnPackages();
   });
   scene("lose", () => {
-    gameMusic.stop();
-    gameMusicIntro.play();
     add([
       text("Game Over"),
       pos(center()),
@@ -3287,6 +3285,12 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       text(score),
       pos(width() / 2, height() / 2 + 120),
       scale(2),
+      origin("center")
+    ]);
+    add([
+      text("Media assets credit to: opengameart.org, craftpix.net and mixkit.co."),
+      pos(width() / 2, height() / 2 + 320),
+      scale(0.3),
       origin("center")
     ]);
     onKeyPress("space", () => restartGame());
@@ -3396,6 +3400,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       go("game");
     });
   });
-  go("credits-0");
+  go("lose");
 })();
 //# sourceMappingURL=game.js.map
