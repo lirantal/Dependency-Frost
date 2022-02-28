@@ -2966,7 +2966,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   }
   __name(getPackageRandomSize, "getPackageRandomSize");
   scene("game", () => {
-    gameMusicIntro.stop();
     let SPAWN_PACKAGES_TOP_SPEED = 3.5;
     gameMusic.play();
     let helpers = ["Patch-Jumper", "Protected", "Protected", "Mode-filterdevs", "Mode-filterdevs", "Protected", "Mode-filterdevs"];
@@ -3045,7 +3044,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         addKaboom(player.pos);
         play("soundPackageCollide", { loop: false });
         shake();
-        go("lose");
+        go("lose", { packageInfo: element.packageInfo });
       }
     });
     player.collides("Patch-Jumper", (element) => {
@@ -3061,7 +3060,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       addKaboom(player.pos);
       play("soundPackageCollide", { loop: false });
       shake();
-      go("lose");
+      go("lose", { packageInfo: element.packageInfo });
     });
     player.collides("Mode-protected", (element) => {
       play("soundItem2", { loop: false });
@@ -3249,6 +3248,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }
     });
     function spawnPackages() {
+      const randomPackage = getRandomPackageData();
       const npmPackage = add([
         sprite("npmbox", { anim: packagesAnimType }),
         area(),
@@ -3256,9 +3256,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         pos(width(), height() - FLOOR_HEIGHT),
         move(LEFT, 240),
         "package",
-        scale(1)
+        scale(1),
+        { packageInfo: randomPackage }
       ]);
-      const randomPackage = getRandomPackageData();
       add([
         text(randomPackage.name, { size: "22", width: 220, font: "apl386" }),
         move(LEFT, 240),
@@ -3275,16 +3275,25 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     __name(spawnPackages, "spawnPackages");
     spawnPackages();
   });
-  scene("lose", () => {
+  scene("lose", ({ packageInfo }) => {
     add([
       text("Game Over"),
-      pos(center()),
+      pos(width() / 2, height() / 6),
+      origin("center")
+    ]);
+    const vulnTitle = packageInfo.vulnerability;
+    const vulnCVE = packageInfo.cve;
+    const vulnURL = packageInfo.link;
+    add([
+      text(score),
+      pos(width() / 2, height() / 6 + 120),
+      scale(2),
       origin("center")
     ]);
     add([
-      text(score),
-      pos(width() / 2, height() / 2 + 120),
-      scale(2),
+      text("You were hit by a " + vulnTitle + " vulnerability\n identified as " + vulnCVE + "\n\n" + vulnURL),
+      pos(width() / 2, height() / 2 + 40),
+      scale(0.3),
       origin("center")
     ]);
     add([
@@ -3400,6 +3409,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       go("game");
     });
   });
-  go("lose");
+  go("game");
 })();
 //# sourceMappingURL=game.js.map

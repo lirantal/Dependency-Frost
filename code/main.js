@@ -366,7 +366,7 @@ scene("game", () => {
       addKaboom(player.pos)
       play('soundPackageCollide', {loop: false})
       shake()
-      go("lose")
+      go("lose", { packageInfo: element.packageInfo})
     }
   })
 
@@ -389,7 +389,7 @@ scene("game", () => {
     addKaboom(player.pos)
     play('soundPackageCollide', {loop: false})
     shake()
-    go("lose")
+    go("lose", { packageInfo: element.packageInfo})
   })
 
   player.collides("Mode-protected", (element) => {
@@ -508,6 +508,8 @@ scene("game", () => {
     if (score >= scorePhase3) {
       if (helpers.includes('Mode-filterdevs')) {
         devDepsCounter++
+        
+        const randomPackage = getRandomPackageData()
         add([
           sprite("npmbox-dev"),
           area(),
@@ -517,7 +519,8 @@ scene("game", () => {
           "DevDeps",
           fixed(),
           solid(),
-          scale(0.5)
+          scale(0.5),
+          { packageInfo: randomPackage }
         ])
       }
     }
@@ -624,6 +627,9 @@ scene("game", () => {
   })
 
   function spawnPackages() {
+
+    const randomPackage = getRandomPackageData()
+    
     const npmPackage = add([
       sprite("npmbox", {anim: packagesAnimType}),
       area(),
@@ -631,12 +637,12 @@ scene("game", () => {
       pos(width(), height() - FLOOR_HEIGHT),
       move(LEFT, 240),
       "package",
-      scale(1)
+      scale(1),
+      { packageInfo: randomPackage },
     ])
 
-
-    const randomPackage = getRandomPackageData()
-
+    
+    
     add([
       text(randomPackage.name, { size: '22', width: 220, font: 'apl386' }),
       move(LEFT, 240),
@@ -656,20 +662,31 @@ scene("game", () => {
 
 }) //end game scene
 
-scene("lose", () => {
-  // gameMusic.stop()
-  // gameMusicIntro.play()
-
+scene("lose", ({packageInfo}) => {
+  gameMusic.stop()
+  gameMusicIntro.play()
+  
   add([
 		text("Game Over"),
-		pos(center()),
+		pos(width() / 2, (height() / 6)),
 		origin("center"),
 	])
 
+  const vulnTitle = packageInfo.vulnerability
+  const vulnCVE = packageInfo.cve
+  const vulnURL = packageInfo.link
+  
 	add([
 		text(score),
-		pos(width() / 2, height() / 2 + 120),
+		pos(width() / 2, (height() / 6) + 120),
 		scale(2),
+		origin("center"),
+	])
+
+  add([
+		text("You were hit by a " + vulnTitle + " vulnerability\n identified as " + vulnCVE + "\n\n" + vulnURL),
+		pos(width() / 2, (height() / 2) + 40),
+		scale(0.3),
 		origin("center"),
 	])
 
