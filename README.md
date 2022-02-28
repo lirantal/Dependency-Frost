@@ -2,6 +2,10 @@
 
 Dependency Frost is an educational platformer game built with the JavaScript gaming framework Kaboom [kaboom](https://kaboomjs.com) to promote awareenss of security in open source dependencies
 
+Can you escape all the vulnerable npm packages?
+
+[![image](https://user-images.githubusercontent.com/316371/155991120-1d38635b-b2b6-4403-b0e7-e6b3ac416d81.png)](https://dependency-frost.lirantal.repl.co)
+
 # Credits
 
 Dependency Frost features a collection of media assets that helped build the game and I'd like to thank the following authors:
