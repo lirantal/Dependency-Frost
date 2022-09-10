@@ -3462,39 +3462,81 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   });
   scene("lose", ({ packageInfo }) => {
     gameMusic.stop();
-    gameMusicIntro.play();
     add([
       text("Game Over"),
-      pos(width() / 2, height() / 6),
+      pos(width() / 2, height() / 8),
       origin("center")
     ]);
     const vulnTitle = packageInfo.vulnerability;
     const vulnCVE = packageInfo.cve;
+    const vulnPackageName = packageInfo.name;
     const vulnURL = packageInfo.link;
     add([
       text(score),
-      pos(width() / 2, height() / 6 + 120),
+      pos(width() / 2, height() / 6 + 80),
       scale(2),
       origin("center")
     ]);
     add([
-      text("You were hit by a " + vulnTitle + " vulnerability\n identified as " + vulnCVE + "\n\n" + vulnURL),
-      pos(width() / 2, height() / 2 + 40),
+      text("You were killed by\n" + vulnPackageName + "\n" + vulnCVE + "\n" + vulnTitle + "\n\n" + vulnURL),
+      pos(width() / 2, height() / 2 - 35),
       scale(0.3),
       origin("center")
     ]);
     add([
       text("Media assets credit to: opengameart.org, craftpix.net and mixkit.co."),
       pos(width() / 2, height() / 2 + 320),
-      scale(0.3),
+      scale(0.2),
       origin("center")
     ]);
-    onKeyPress("space", () => restartGame());
-    mouseClick(() => restartGame());
     const restartGame = /* @__PURE__ */ __name(() => {
       score = 0;
       go("game");
     }, "restartGame");
+    const btnRestart = add([
+      text("Restart"),
+      pos(width() / 2, height() / 2 + 120),
+      area({ cursor: "pointer" }),
+      scale(0.5),
+      origin("center")
+    ]);
+    const btnLearnMore = add([
+      text("See vulnerability"),
+      pos(width() / 2, height() / 2 + 220),
+      area({ cursor: "pointer" }),
+      scale(0.5),
+      origin("center")
+    ]);
+    btnRestart.onClick(restartGame);
+    btnRestart.onUpdate(() => {
+      if (btnRestart.isHovering()) {
+        const t = time() * 10;
+        btnRestart.color = rgb(
+          wave(0, 255, t),
+          wave(0, 255, t + 2),
+          wave(0, 255, t + 4)
+        );
+        btnRestart.scale = vec2(1.2);
+      } else {
+        btnRestart.scale = vec2(1);
+        btnRestart.color = rgb(255, 63, 198);
+      }
+    });
+    btnLearnMore.onClick(() => window.open(vulnURL, "_blank"));
+    btnLearnMore.onUpdate(() => {
+      if (btnLearnMore.isHovering()) {
+        const t = time() * 10;
+        btnLearnMore.color = rgb(
+          wave(0, 255, t),
+          wave(0, 255, t + 2),
+          wave(0, 255, t + 4)
+        );
+        btnLearnMore.scale = vec2(1.2);
+      } else {
+        btnLearnMore.scale = vec2(1);
+        btnLearnMore.color = rgb(249, 144, 72);
+      }
+    });
   });
   scene("credits-0", () => {
     gameMusic.stop();
@@ -3596,6 +3638,11 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       go("game");
     });
   });
-  go("credits-0");
+  go("lose", { packageInfo: {
+    name: "node-forge",
+    cve: "CVE-2022-0122",
+    vulnerability: "Open Redirect",
+    link: "https://security.snyk.io/vuln/SNYK-JS-NODEFORGE-2330875"
+  } });
 })();
 //# sourceMappingURL=game.js.map
