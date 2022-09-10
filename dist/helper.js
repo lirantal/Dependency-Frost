@@ -22,22 +22,22 @@
     return a;
   };
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-  var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
   var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
   var __commonJS = (cb, mod) => function __require() {
-    return mod || (0, cb[Object.keys(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
   };
-  var __reExport = (target, module, desc) => {
-    if (module && typeof module === "object" || typeof module === "function") {
-      for (let key of __getOwnPropNames(module))
-        if (!__hasOwnProp.call(target, key) && key !== "default")
-          __defProp(target, key, { get: () => module[key], enumerable: !(desc = __getOwnPropDesc(module, key)) || desc.enumerable });
+  var __copyProps = (to, from, except, desc) => {
+    if (from && typeof from === "object" || typeof from === "function") {
+      for (let key of __getOwnPropNames(from))
+        if (!__hasOwnProp.call(to, key) && key !== except)
+          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
     }
-    return target;
+    return to;
   };
-  var __toModule = (module) => {
-    return __reExport(__markAsModule(__defProp(module != null ? __create(__getProtoOf(module)) : {}, "default", module && module.__esModule && "default" in module ? { get: () => module.default, enumerable: true } : { value: module, enumerable: true })), module);
-  };
+  var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+    isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+    mod
+  ));
 
   // node_modules/stackframe/stackframe.js
   var require_stackframe = __commonJS({
@@ -217,14 +217,13 @@
             }, this);
             return filtered.map(function(line) {
               if (line.indexOf("(eval ") > -1) {
-                line = line.replace(/eval code/g, "eval").replace(/(\(eval at [^()]*)|(\),.*$)/g, "");
+                line = line.replace(/eval code/g, "eval").replace(/(\(eval at [^()]*)|(,.*$)/g, "");
               }
-              var sanitizedLine = line.replace(/^\s+/, "").replace(/\(eval code/g, "(");
-              var location2 = sanitizedLine.match(/ (\((.+):(\d+):(\d+)\)$)/);
+              var sanitizedLine = line.replace(/^\s+/, "").replace(/\(eval code/g, "(").replace(/^.*?\s+/, "");
+              var location2 = sanitizedLine.match(/ (\(.+\)$)/);
               sanitizedLine = location2 ? sanitizedLine.replace(location2[0], "") : sanitizedLine;
-              var tokens = sanitizedLine.split(/\s+/).slice(1);
-              var locationParts = this.extractLocation(location2 ? location2[1] : tokens.pop());
-              var functionName = tokens.join(" ") || void 0;
+              var locationParts = this.extractLocation(location2 ? location2[1] : sanitizedLine);
+              var functionName = location2 && sanitizedLine || void 0;
               var fileName = ["eval", "<anonymous>"].indexOf(locationParts[0]) > -1 ? void 0 : locationParts[0];
               return new StackFrame({
                 functionName,
@@ -294,12 +293,14 @@
             for (var i = 0, len = lines.length; i < len; i += 2) {
               var match = lineRE.exec(lines[i]);
               if (match) {
-                result.push(new StackFrame({
-                  functionName: match[3] || void 0,
-                  fileName: match[2],
-                  lineNumber: match[1],
-                  source: lines[i]
-                }));
+                result.push(
+                  new StackFrame({
+                    functionName: match[3] || void 0,
+                    fileName: match[2],
+                    lineNumber: match[1],
+                    source: lines[i]
+                  })
+                );
               }
             }
             return result;
@@ -528,7 +529,7 @@
       __name(relative, "relative");
       exports.relative = relative;
       var supportsNullProto = function() {
-        var obj = Object.create(null);
+        var obj = /* @__PURE__ */ Object.create(null);
         return !("__proto__" in obj);
       }();
       function identity(s) {
@@ -693,7 +694,14 @@
         if (aHaystack.length === 0) {
           return -1;
         }
-        var index = recursiveSearch(-1, aHaystack.length, aNeedle, aHaystack, aCompare, aBias || exports.GREATEST_LOWER_BOUND);
+        var index = recursiveSearch(
+          -1,
+          aHaystack.length,
+          aNeedle,
+          aHaystack,
+          aCompare,
+          aBias || exports.GREATEST_LOWER_BOUND
+        );
         if (index < 0) {
           return -1;
         }
@@ -715,7 +723,7 @@
       var has = Object.prototype.hasOwnProperty;
       function ArraySet() {
         this._array = [];
-        this._set = Object.create(null);
+        this._set = /* @__PURE__ */ Object.create(null);
       }
       __name(ArraySet, "ArraySet");
       ArraySet.fromArray = /* @__PURE__ */ __name(function ArraySet_fromArray(aArray, aAllowDuplicates) {
@@ -992,7 +1000,14 @@
         }
         needle.source = this._sources.indexOf(needle.source);
         var mappings = [];
-        var index = this._findMapping(needle, this._originalMappings, "originalLine", "originalColumn", util.compareByOriginalPositions, binarySearch.LEAST_UPPER_BOUND);
+        var index = this._findMapping(
+          needle,
+          this._originalMappings,
+          "originalLine",
+          "originalColumn",
+          util.compareByOriginalPositions,
+          binarySearch.LEAST_UPPER_BOUND
+        );
         if (index >= 0) {
           var mapping = this._originalMappings[index];
           if (aArgs.column === void 0) {
@@ -1053,7 +1068,10 @@
         var names = smc._names = ArraySet.fromArray(aSourceMap._names.toArray(), true);
         var sources = smc._sources = ArraySet.fromArray(aSourceMap._sources.toArray(), true);
         smc.sourceRoot = aSourceMap._sourceRoot;
-        smc.sourcesContent = aSourceMap._generateSourcesContent(smc._sources.toArray(), smc.sourceRoot);
+        smc.sourcesContent = aSourceMap._generateSourcesContent(
+          smc._sources.toArray(),
+          smc.sourceRoot
+        );
         smc.file = aSourceMap._file;
         var generatedMappings = aSourceMap._mappings.toArray().slice();
         var destGeneratedMappings = smc.__generatedMappings = [];
@@ -1196,7 +1214,14 @@
           generatedLine: util.getArg(aArgs, "line"),
           generatedColumn: util.getArg(aArgs, "column")
         };
-        var index = this._findMapping(needle, this._generatedMappings, "generatedLine", "generatedColumn", util.compareByGeneratedPositionsDeflated, util.getArg(aArgs, "bias", SourceMapConsumer.GREATEST_LOWER_BOUND));
+        var index = this._findMapping(
+          needle,
+          this._generatedMappings,
+          "generatedLine",
+          "generatedColumn",
+          util.compareByGeneratedPositionsDeflated,
+          util.getArg(aArgs, "bias", SourceMapConsumer.GREATEST_LOWER_BOUND)
+        );
         if (index >= 0) {
           var mapping = this._generatedMappings[index];
           if (mapping.generatedLine === needle.generatedLine) {
@@ -1278,7 +1303,14 @@
           originalLine: util.getArg(aArgs, "line"),
           originalColumn: util.getArg(aArgs, "column")
         };
-        var index = this._findMapping(needle, this._originalMappings, "originalLine", "originalColumn", util.compareByOriginalPositions, util.getArg(aArgs, "bias", SourceMapConsumer.GREATEST_LOWER_BOUND));
+        var index = this._findMapping(
+          needle,
+          this._originalMappings,
+          "originalLine",
+          "originalColumn",
+          util.compareByOriginalPositions,
+          util.getArg(aArgs, "bias", SourceMapConsumer.GREATEST_LOWER_BOUND)
+        );
         if (index >= 0) {
           var mapping = this._originalMappings[index];
           if (mapping.source === needle.source) {
@@ -1352,13 +1384,17 @@
           generatedLine: util.getArg(aArgs, "line"),
           generatedColumn: util.getArg(aArgs, "column")
         };
-        var sectionIndex = binarySearch.search(needle, this._sections, function(needle2, section2) {
-          var cmp = needle2.generatedLine - section2.generatedOffset.generatedLine;
-          if (cmp) {
-            return cmp;
+        var sectionIndex = binarySearch.search(
+          needle,
+          this._sections,
+          function(needle2, section2) {
+            var cmp = needle2.generatedLine - section2.generatedOffset.generatedLine;
+            if (cmp) {
+              return cmp;
+            }
+            return needle2.generatedColumn - section2.generatedOffset.generatedColumn;
           }
-          return needle2.generatedColumn - section2.generatedOffset.generatedColumn;
-        });
+        );
         var section = this._sections[sectionIndex];
         if (!section) {
           return {
@@ -1574,13 +1610,15 @@
               if (mappedSource) {
                 sourceCache[loc.source] = mappedSource;
               }
-              resolve(new StackFrame({
-                functionName: loc.name || stackframe.functionName,
-                args: stackframe.args,
-                fileName: loc.source,
-                lineNumber: loc.line,
-                columnNumber: loc.column
-              }));
+              resolve(
+                new StackFrame({
+                  functionName: loc.name || stackframe.functionName,
+                  args: stackframe.args,
+                  fileName: loc.source,
+                  lineNumber: loc.line,
+                  columnNumber: loc.column
+                })
+              );
             } else {
               reject(new Error("Could not get original source for given stackframe and source map"));
             }
@@ -1638,7 +1676,7 @@
                       sourceMapSource.sourceRoot = defaultSourceRoot;
                     }
                     resolve2(new SourceMap.SourceMapConsumer(sourceMapSource));
-                  }, reject);
+                  }).catch(reject);
                 }.bind(this));
                 this.sourceMapConsumerCache[sourceMappingURL] = sourceMapConsumerPromise;
                 resolve(sourceMapConsumerPromise);
@@ -1853,7 +1891,7 @@
   });
 
   // helper.ts
-  var import_stacktrace_js = __toModule(require_stacktrace());
+  var import_stacktrace_js = __toESM(require_stacktrace());
   window.addEventListener("error", (e) => {
     import_stacktrace_js.default.fromError(e.error).then((stack) => {
       fetch("/error", {
@@ -1900,7 +1938,11 @@
         const h = 480;
         const left = screen.width / 2 - w / 2;
         const top = screen.height / 2 - h / 2;
-        const authWindow = window.open(`https://repl.it/auth_with_repl_site?domain=${location.host}`, "_blank", `modal=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=${w}, height=${h}, top=${top}, left=${left}`);
+        const authWindow = window.open(
+          `https://repl.it/auth_with_repl_site?domain=${location.host}`,
+          "_blank",
+          `modal=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=${w}, height=${h}, top=${top}, left=${left}`
+        );
       });
     },
     getUserOrAuth() {

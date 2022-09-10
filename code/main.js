@@ -5,7 +5,10 @@ kaboom({
   crisp: true,
   width: 1080,
   height: 720,
-  background: [134, 135, 247],
+  // snyk purple dark
+  // background: [68, 28, 153],
+  // snykcon purple dark
+  background: [36, 3, 58],
   scale: 1,
   canvas: document.getElementById('game'),
 })
