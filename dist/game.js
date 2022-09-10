@@ -3462,6 +3462,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   });
   scene("lose", ({ packageInfo }) => {
     gameMusic.stop();
+    gameMusicIntro.play();
     add([
       text("Game Over"),
       pos(width() / 2, height() / 8),
@@ -3478,8 +3479,15 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       origin("center")
     ]);
     add([
-      text("You were killed by\n" + vulnPackageName + "\n" + vulnCVE + "\n" + vulnTitle + "\n\n" + vulnURL),
-      pos(width() / 2, height() / 2 - 35),
+      text("You were killed by:"),
+      pos(width() / 2, height() / 2 - 80),
+      scale(0.3),
+      origin("center")
+    ]);
+    const btnKilledByVuln = add([
+      text(vulnPackageName + "\n" + vulnCVE + "\n" + vulnTitle + "\n\n" + vulnURL),
+      pos(width() / 2, height() / 2),
+      area({ cursor: "pointer", height: 350 }),
       scale(0.3),
       origin("center")
     ]);
@@ -3537,6 +3545,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         btnLearnMore.color = rgb(249, 144, 72);
       }
     });
+    btnKilledByVuln.onClick(() => window.open(vulnURL, "_blank"));
   });
   scene("credits-0", () => {
     gameMusic.stop();
@@ -3638,11 +3647,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       go("game");
     });
   });
-  go("lose", { packageInfo: {
-    name: "node-forge",
-    cve: "CVE-2022-0122",
-    vulnerability: "Open Redirect",
-    link: "https://security.snyk.io/vuln/SNYK-JS-NODEFORGE-2330875"
-  } });
+  go("credits-0");
 })();
 //# sourceMappingURL=game.js.map

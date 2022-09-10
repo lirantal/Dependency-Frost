@@ -688,8 +688,16 @@ scene("lose", ({packageInfo}) => {
 	])
 
   add([
-		text("You were killed by\n" + vulnPackageName + "\n" + vulnCVE + "\n" + vulnTitle + "\n\n" + vulnURL),
-		pos(width() / 2, (height() / 2) - 35),
+		text("You were killed by:"),
+		pos(width() / 2, (height() / 2) - 80),
+		scale(0.3),
+		origin("center"),
+	])
+
+  const btnKilledByVuln = add([
+		text(vulnPackageName + "\n" + vulnCVE + "\n" + vulnTitle + "\n\n" + vulnURL),
+		pos(width() / 2, (height() / 2)),
+    area({ cursor: "pointer", height: 350 }),
 		scale(0.3),
 		origin("center"),
 	])
@@ -741,7 +749,7 @@ scene("lose", ({packageInfo}) => {
 		}
 	})
 
-  // --learn more
+  // --see vulnerability
   btnLearnMore.onClick(() => window.open(vulnURL, '_blank'))
   btnLearnMore.onUpdate(() => {
 		if (btnLearnMore.isHovering()) {
@@ -757,6 +765,9 @@ scene("lose", ({packageInfo}) => {
 			btnLearnMore.color = rgb(249, 144, 72)
 		}
 	})
+
+  // --killed by vuln
+  btnKilledByVuln.onClick(() => window.open(vulnURL, '_blank'))
 
 })
 
