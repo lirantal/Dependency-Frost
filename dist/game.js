@@ -3445,7 +3445,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         { packageInfo: randomPackage }
       ]);
       add([
-        text(randomPackage.name, { size: "22", width: 220, font: "apl386" }),
+        text(randomPackage.name, { size: "22", font: "apl386" }),
         move(LEFT, 240),
         origin("botleft"),
         color(255, 255, 255),

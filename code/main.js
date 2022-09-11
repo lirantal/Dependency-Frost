@@ -80,8 +80,8 @@ const scorePhase2 = 2000
 // devdeps:
 const scorePhase3 = 2800
 // currently unused:
-const scorePhase4 = 5000
-const scorePhase5 = 10000
+// const scorePhase4 = 5000
+// const scorePhase5 = 10000
 
 const vulnerablePackagesList = [
   {
@@ -648,7 +648,7 @@ scene("game", () => {
     
     
     add([
-      text(randomPackage.name, { size: '22', width: 220, font: 'apl386' }),
+      text(randomPackage.name, { size: '22', font: 'apl386' }),
       move(LEFT, 240),
       origin('botleft'),
       color(255, 255, 255),
@@ -885,3 +885,4 @@ scene('intro-1', () => {
 })
 
 go('credits-0')
+// go('game')
