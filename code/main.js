@@ -668,7 +668,7 @@ scene("game", () => {
 
 scene("lose", ({packageInfo}) => {
   gameMusic.stop()
-  // gameMusicIntro.play()
+  gameMusicIntro.play()
   
   add([
 		text("GAME OVER"),
@@ -885,12 +885,4 @@ scene('intro-1', () => {
   });
 })
 
-// go('credits-0')
-// go('lose')
-score = 8201
-go('lose', { packageInfo: {
-  name: 'node-forge',
-  cve: 'CVE-2022-0122',
-  vulnerability: 'Open Redirect',
-  link: 'https://security.snyk.io/vuln/SNYK-JS-NODEFORGE-2330875',
-}})
+go('credits-0')
