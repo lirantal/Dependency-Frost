@@ -718,7 +718,7 @@ scene("lose", ({packageInfo}) => {
 
   const btnRestart = add([
 		text("Restart"),
-    pos(width() / 2, height() / 2 + 120),
+    pos(width() / 2, height() / 2 + 50),
 		area({ cursor: "pointer", }),
 		scale(0.5),
 		origin("center"),
@@ -727,7 +727,7 @@ scene("lose", ({packageInfo}) => {
 
   const btnLearnMore = add([
 		text("See vulnerability"),
-    pos(width() / 2, height() / 2 + 220),
+    pos(width() / 2, height() / 2 + 130),
 		area({ cursor: "pointer", }),
 		scale(0.5),
 		origin("center"),
