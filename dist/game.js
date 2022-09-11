@@ -3462,6 +3462,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   });
   scene("lose", ({ packageInfo }) => {
     gameMusic.stop();
+    gameMusicIntro.play();
     add([
       text("GAME OVER"),
       pos(width() / 2, 120),
@@ -3650,12 +3651,6 @@ identified as [${vulnCVE}].orange`, {
       go("game");
     });
   });
-  score = 8201;
-  go("lose", { packageInfo: {
-    name: "node-forge",
-    cve: "CVE-2022-0122",
-    vulnerability: "Open Redirect",
-    link: "https://security.snyk.io/vuln/SNYK-JS-NODEFORGE-2330875"
-  } });
+  go("credits-0");
 })();
 //# sourceMappingURL=game.js.map
