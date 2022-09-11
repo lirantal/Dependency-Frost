@@ -8,7 +8,8 @@ kaboom({
   // snyk purple dark
   // background: [68, 28, 153],
   // snykcon purple dark
-  background: [36, 3, 58],
+  // background: [36, 3, 58],
+  background: [33, 33, 76],
   scale: 1,
   canvas: document.getElementById('game'),
 })

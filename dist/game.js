@@ -2917,7 +2917,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     crisp: true,
     width: 1080,
     height: 720,
-    background: [36, 3, 58],
+    background: [33, 33, 76],
     scale: 1,
     canvas: document.getElementById("game")
   });
