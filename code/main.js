@@ -668,11 +668,13 @@ scene("game", () => {
 
 scene("lose", ({packageInfo}) => {
   gameMusic.stop()
-  gameMusicIntro.play()
+  // gameMusicIntro.play()
   
   add([
-		text("Game Over"),
-		pos(width() / 2, (height() / 8)),
+		text("GAME OVER"),
+		// pos(width() / 2, (height() / 8)),
+    pos(width() / 2, 120),
+    scale(1.2),
 		origin("center"),
 	])
 
@@ -682,23 +684,22 @@ scene("lose", ({packageInfo}) => {
   const vulnURL = packageInfo.link
   
 	add([
-		text(score),
-		pos(width() / 2, (height() / 6) + 80),
-		scale(2),
-		origin("center"),
-	])
-
-  add([
-		text("You were killed by:"),
-		pos(width() / 2, (height() / 2) - 80),
-		scale(0.3),
+		text(`YOUR SCORE: ${score}`),
+		pos(width() / 2, 50),
+		scale(0.6),
 		origin("center"),
 	])
 
   const btnKilledByVuln = add([
-		text(vulnPackageName + "\n" + vulnCVE + "\n" + vulnTitle + "\n\n" + vulnURL),
-		pos(width() / 2, (height() / 2)),
-    area({ cursor: "pointer", height: 350 }),
+    text(`you were killed by\nan unpatched [${vulnTitle}].orange\nsecurity vulnerability in [${vulnPackageName}].orange\nidentified as [${vulnCVE}].orange`, {
+      styles: {
+        "orange": {
+          color: rgb(249, 144, 72),
+        },
+      }
+    }),
+		pos(width() / 2, 250),
+    area({ cursor: "pointer", height: 250 }),
 		scale(0.3),
 		origin("center"),
 	])
@@ -884,5 +885,12 @@ scene('intro-1', () => {
   });
 })
 
-go('credits-0')
-// go('game')
+// go('credits-0')
+// go('lose')
+score = 8201
+go('lose', { packageInfo: {
+  name: 'node-forge',
+  cve: 'CVE-2022-0122',
+  vulnerability: 'Open Redirect',
+  link: 'https://security.snyk.io/vuln/SNYK-JS-NODEFORGE-2330875',
+}})
