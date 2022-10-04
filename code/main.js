@@ -1,5 +1,9 @@
 import kaboom from "kaboom"
 
+// Set high score before the game run loop starts
+let highScore = localStorage.getItem("highScore") || 0
+localStorage.setItem("highScore", highScore)
+
 // initialize context
 kaboom({
   crisp: true,
@@ -673,7 +677,7 @@ scene("lose", ({packageInfo}) => {
   add([
 		text("GAME OVER"),
 		// pos(width() / 2, (height() / 8)),
-    pos(width() / 2, 120),
+    pos(width() / 2, 190),
     scale(1.2),
 		origin("center"),
 	])
@@ -682,13 +686,26 @@ scene("lose", ({packageInfo}) => {
   const vulnCVE = packageInfo.cve
   const vulnPackageName = packageInfo.name
   const vulnURL = packageInfo.link
-  
+
+  if (score > parseInt(highScore)) {
+    localStorage.setItem("highScore", score)
+    highScore = score
+  }
+
 	add([
 		text(`YOUR SCORE: ${score}`),
 		pos(width() / 2, 50),
 		scale(0.6),
 		origin("center"),
 	])
+
+  add([
+    text(`HIGH SCORE: ${highScore}`),
+    pos(width() / 2, 110),
+    scale(0.6),
+    origin("center"),
+    color(255, 63, 198),
+  ])
 
   const btnKilledByVuln = add([
     text(`you were killed by\nan unpatched [${vulnTitle}].orange\nsecurity vulnerability in [${vulnPackageName}].orange\nidentified as [${vulnCVE}].orange`, {
@@ -698,7 +715,7 @@ scene("lose", ({packageInfo}) => {
         },
       }
     }),
-		pos(width() / 2, 250),
+		pos(width() / 2, 300),
     area({ cursor: "pointer", height: 250 }),
 		scale(0.3),
 		origin("center"),
