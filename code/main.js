@@ -269,6 +269,8 @@ scene("game", () => {
 
   let helpers = ['Patch-Jumper', 'Protected',  'Protected', 'Mode-filterdevs', 'Mode-filterdevs', 'Protected', 'Mode-filterdevs']
   score = 0
+  playerProtected = false
+  packagesAnimType = 'regular'
 
   let JUMP_FORCE = 705
   const FLOOR_HEIGHT = 48
