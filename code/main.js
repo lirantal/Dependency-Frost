@@ -269,6 +269,8 @@ scene("game", () => {
 
   let helpers = ['Patch-Jumper', 'Protected',  'Protected', 'Mode-filterdevs', 'Mode-filterdevs', 'Protected', 'Mode-filterdevs']
   score = 0
+  playerProtected = false
+  packagesAnimType = 'regular'
 
   let JUMP_FORCE = 705
   const FLOOR_HEIGHT = 48
@@ -329,6 +331,8 @@ scene("game", () => {
   onDraw("player", () => {
     if (player.pos.x <0) {
       player.moveTo(0, player.pos.y)
+    } else if (player.pos.x > width()-player.width) {
+      player.moveTo(width()-player.width, player.pos.y)
     }
   })
 
