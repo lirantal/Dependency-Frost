@@ -2913,6 +2913,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   }, "default");
 
   // code/main.js
+  var highScore = localStorage.getItem("highScore") || 0;
+  localStorage.setItem("highScore", highScore);
   no({
     crisp: true,
     width: 1080,
@@ -3153,6 +3155,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     gameMusic.play();
     let helpers = ["Patch-Jumper", "Protected", "Protected", "Mode-filterdevs", "Mode-filterdevs", "Protected", "Mode-filterdevs"];
     score = 0;
+    playerProtected = false;
+    packagesAnimType = "regular";
     let JUMP_FORCE = 705;
     const FLOOR_HEIGHT = 48;
     const MOVE_SPEED = 200;
@@ -3191,6 +3195,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     onDraw("player", () => {
       if (player.pos.x < 0) {
         player.moveTo(0, player.pos.y);
+      } else if (player.pos.x > width() - player.width) {
+        player.moveTo(width() - player.width, player.pos.y);
       }
     });
     function jump() {
@@ -3465,7 +3471,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     gameMusicIntro.play();
     add([
       text("GAME OVER"),
-      pos(width() / 2, 120),
+      pos(width() / 2, 190),
       scale(1.2),
       origin("center")
     ]);
@@ -3473,11 +3479,22 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     const vulnCVE = packageInfo.cve;
     const vulnPackageName = packageInfo.name;
     const vulnURL = packageInfo.link;
+    if (score > parseInt(highScore)) {
+      localStorage.setItem("highScore", score);
+      highScore = score;
+    }
     add([
       text(`YOUR SCORE: ${score}`),
       pos(width() / 2, 50),
       scale(0.6),
       origin("center")
+    ]);
+    add([
+      text(`HIGH SCORE: ${highScore}`),
+      pos(width() / 2, 110),
+      scale(0.6),
+      origin("center"),
+      color(255, 63, 198)
     ]);
     const btnKilledByVuln = add([
       text(`you were killed by
@@ -3490,7 +3507,7 @@ identified as [${vulnCVE}].orange`, {
           }
         }
       }),
-      pos(width() / 2, 250),
+      pos(width() / 2, 300),
       area({ cursor: "pointer", height: 250 }),
       scale(0.3),
       origin("center")
