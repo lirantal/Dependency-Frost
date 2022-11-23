@@ -346,30 +346,49 @@ scene("game", () => {
 
   onKeyPress("space", jump)
   onKeyPress("up", jump)
+  onKeyPress("w", jump)
   mouseClick(jump)
 
 
   onKeyPress('right', () => {
     player.flipX(true)
   })
+  onKeyPress('d', () => {
+    player.flipX(true)
+  })
 
   onKeyPress('left', () => {
+    player.flipX(false)
+  })
+  onKeyPress('a', () => {
     player.flipX(false)
   })
 
   onKeyRelease('left', () => {
     player.play('run')
   })
+  onKeyRelease('a', () => {
+    player.play('run')
+  })
 
   onKeyRelease('right', () => {
+    player.play('run')
+  })
+  onKeyRelease('d', () => {
     player.play('run')
   })
 
   onKeyDown('right', () => {
     player.move(MOVE_SPEED, 0)
   })
+  onKeyDown('d', () => {
+    player.move(MOVE_SPEED, 0)
+  })
 
   onKeyDown('left', () => {
+    player.move(-MOVE_SPEED, 0)
+  })
+  onKeyDown('a', () => {
     player.move(-MOVE_SPEED, 0)
   })
 
