@@ -5,7 +5,7 @@
 		"chokidar": "^3.5.2",
 		"esbuild": "^0.15.7",
 		"express": "^4.17.1",
-		"kaboom": "^2000.1.2",
+		"kaboom": "^2000.2.10",
 		"stacktrace-js": "^2.0.2",
 		"ws": "^8.2.0"
 	}
