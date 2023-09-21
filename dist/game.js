@@ -2913,6 +2913,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   }, "default");
 
   // code/main.js
+  var highScore = localStorage.getItem("highScore") || 0;
+  localStorage.setItem("highScore", highScore);
   no({
     crisp: true,
     width: 1080,
@@ -2958,7 +2960,10 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadSound("jump-fast", "sounds/fast-simple-chop-5-6270.mp3");
   loadSound("score", "sounds/score.mp3");
   loadSound("soundThunder", "sounds/mixkit-distant-thunder-explosion-1278.wav");
-  loadSound("soundPackageCollide", "sounds/mixkit-epic-impact-afar-explosion-2782.wav");
+  loadSound(
+    "soundPackageCollide",
+    "sounds/mixkit-epic-impact-afar-explosion-2782.wav"
+  );
   loadSound("soundItem1", "sounds/mixkit-fast-small-sweep-transition-166.wav");
   loadSound("soundItem2", "sounds/mixkit-fairy-teleport-868.wav");
   loadSound("soundItem3", "sounds/mixkit-magic-sparkle-whoosh-2350.wav");
@@ -3151,22 +3156,22 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     gameMusicIntro.stop();
     let SPAWN_PACKAGES_TOP_SPEED = 3.5;
     gameMusic.play();
-    let helpers = ["Patch-Jumper", "Protected", "Protected", "Mode-filterdevs", "Mode-filterdevs", "Protected", "Mode-filterdevs"];
+    let helpers = [
+      "Patch-Jumper",
+      "Protected",
+      "Protected",
+      "Mode-filterdevs",
+      "Mode-filterdevs",
+      "Protected",
+      "Mode-filterdevs"
+    ];
     score = 0;
     let JUMP_FORCE = 705;
     const FLOOR_HEIGHT = 48;
     const MOVE_SPEED = 200;
     gravity(2400);
-    add([
-      sprite("background"),
-      pos(0, 0),
-      scale(0.9)
-    ]);
-    const scoreLabel = add([
-      text(score),
-      pos(24, 24),
-      fixed()
-    ]);
+    add([sprite("background"), pos(0, 0), scale(0.9)]);
+    const scoreLabel = add([text(score), pos(24, 24), fixed()]);
     action(() => {
       score++;
       scoreLabel.text = score;
@@ -3187,7 +3192,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       scale(1.8),
       "player"
     ]);
-    player.flipX(true);
+    player.flipX(false);
     onDraw("player", () => {
       if (player.pos.x < 0) {
         player.moveTo(0, player.pos.y);
@@ -3205,10 +3210,10 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     onKeyPress("up", jump);
     mouseClick(jump);
     onKeyPress("right", () => {
-      player.flipX(true);
+      player.flipX(false);
     });
     onKeyPress("left", () => {
-      player.flipX(false);
+      player.flipX(true);
     });
     onKeyRelease("left", () => {
       player.play("run");
@@ -3465,7 +3470,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     gameMusicIntro.play();
     add([
       text("GAME OVER"),
-      pos(width() / 2, 120),
+      pos(width() / 2, 190),
       scale(1.2),
       origin("center")
     ]);
@@ -3473,30 +3478,46 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     const vulnCVE = packageInfo.cve;
     const vulnPackageName = packageInfo.name;
     const vulnURL = packageInfo.link;
+    if (score > parseInt(highScore)) {
+      localStorage.setItem("highScore", score);
+      highScore = score;
+    }
     add([
       text(`YOUR SCORE: ${score}`),
       pos(width() / 2, 50),
       scale(0.6),
       origin("center")
     ]);
+    add([
+      text(`HIGH SCORE: ${highScore}`),
+      pos(width() / 2, 110),
+      scale(0.6),
+      origin("center"),
+      color(255, 63, 198)
+    ]);
     const btnKilledByVuln = add([
-      text(`you were killed by
+      text(
+        `you were killed by
 an unpatched [${vulnTitle}].orange
 security vulnerability in [${vulnPackageName}].orange
-identified as [${vulnCVE}].orange`, {
-        styles: {
-          "orange": {
-            color: rgb(249, 144, 72)
+identified as [${vulnCVE}].orange`,
+        {
+          styles: {
+            orange: {
+              color: rgb(249, 144, 72)
+            }
           }
         }
-      }),
-      pos(width() / 2, 250),
+      ),
+      pos(width() / 2, 300),
       area({ cursor: "pointer", height: 250 }),
       scale(0.3),
       origin("center")
     ]);
     add([
-      text("Media assets credit to: opengameart.org, craftpix.net and mixkit.co."),
+      text(
+        "Media assets credit to: opengameart.org, craftpix.net and mixkit.co."
+      ),
       pos(width() / 2, height() / 2 + 320),
       scale(0.2),
       origin("center")
@@ -3609,7 +3630,7 @@ identified as [${vulnCVE}].orange`, {
     });
     wait(3, () => {
       add([
-        text("\n\n\n\nYou are patch, the dog", {
+        text("\n\n\n\nYou are John Hammond", {
           size: 28,
           font: "apl386"
         }),
