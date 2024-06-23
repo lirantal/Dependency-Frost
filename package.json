@@ -2,7 +2,9 @@
   "name": "kaboom-env",
   "scripts": {
     "start": "node run.js",
-    "dev": "node run.js"
+    "dev": "node run.js",
+    "#build": "esbuild code/main.js --bundle --minify --outfile=public/main.js",
+    "build": "node build.js"
   },
   "dependencies": {
     "@replit/database": "^2.0.1",
