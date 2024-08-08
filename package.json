@@ -8,6 +8,7 @@
   "dependencies": {
     "@replit/database": "^2.0.1",
     "chokidar": "^3.5.2",
+    "csurf": "^1.11.0",
     "esbuild": "^0.15.7",
     "express": "^4.17.1",
     "kaboom": "^2000.1.2",

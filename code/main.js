@@ -772,6 +772,8 @@ scene("lose", ({packageInfo}) => {
 		}
 	})
 
+  onKeyPress('space', restartGame)
+
   // --see vulnerability
   btnLearnMore.onClick(() => window.open(vulnURL, '_blank'))
   btnLearnMore.onUpdate(() => {
