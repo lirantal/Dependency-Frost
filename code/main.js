@@ -1,11 +1,12 @@
-import kaboom from "kaboom"
+import kaplay from "kaplay";
+import "kaplay/global";
 
 // Set high score before the game run loop starts
 let highScore = localStorage.getItem("highScore") || 0
 localStorage.setItem("highScore", highScore)
 
 // initialize context
-kaboom({
+kaplay({
   crisp: true,
   width: 1080,
   height: 720,
@@ -17,6 +18,8 @@ kaboom({
   scale: 1,
   canvas: document.getElementById('game'),
 })
+
+loadFont("apl386", "/fonts/apl386.ttf");
 
 // graphics from https://opengameart.org/content/winter-platformer-game-tileset, license: CC0 public domain
 loadSprite("background", "sprites/BG.png")
@@ -277,7 +280,7 @@ scene("game", () => {
   const MOVE_SPEED = 200
   
   // define gravity
-	gravity(2400)
+	setGravity(2400)
 
   // add christmas background!
   add([
@@ -293,7 +296,7 @@ scene("game", () => {
   ])
 
   // increment score every frame
-  action(() => {
+  onUpdate(() => {
     score++
     scoreLabel.text = score
   })
@@ -304,7 +307,7 @@ scene("game", () => {
     pos(0, height() - FLOOR_HEIGHT),
     outline(4),
     area(),
-    solid(),
+    body({ isStatic: true }),
     color(128,0,128)
   ])
 
@@ -317,7 +320,7 @@ scene("game", () => {
     scale(1.8),
     "player",
   ])
-  player.flipX(true)
+  player.flipX = true
   
   // enable camera position movement
   // player.action(() => {
@@ -337,7 +340,7 @@ scene("game", () => {
   })
 
   function jump() {
-    if (player.grounded()) {
+    if (player.isGrounded()) {
       play('jump-fast', {loop: false})
       player.jump(JUMP_FORCE)
       player.play('idle')
@@ -346,15 +349,15 @@ scene("game", () => {
 
   onKeyPress("space", jump)
   onKeyPress("up", jump)
-  mouseClick(jump)
+  onMousePress(jump)
 
 
   onKeyPress('right', () => {
-    player.flipX(true)
+    player.flipX = true
   })
 
   onKeyPress('left', () => {
-    player.flipX(false)
+    player.flipX = false
   })
 
   onKeyRelease('left', () => {
@@ -382,7 +385,7 @@ scene("game", () => {
     }
   })
 
-  player.collides("Patch-Jumper", (element) => {
+  player.onCollide("Patch-Jumper", (element) => {
     play('soundItem3', {loop: false})
     addKaboom(player.pos)
     shake()
@@ -404,7 +407,7 @@ scene("game", () => {
     go("lose", { packageInfo: element.packageInfo})
   })
 
-  player.collides("Mode-protected", (element) => {
+  player.onCollide("Mode-protected", (element) => {
     play('soundItem2', {loop: false})
     // remove the helper now that it's received
     helperIndex = helpers.indexOf('Protected')
@@ -417,20 +420,20 @@ scene("game", () => {
     // new spawned packages should have the "weak" animation
     packagesAnimType = 'weak'
     playerProtected = true
-    every('package', (element) => {
-      element.play(packagesAnimType)
-    })
+    get('package').forEach((element) => {
+      element.play(packagesAnimType);
+    });
     // and after 5 seconds it expires back to "regular"
     wait(5, () => {
       packagesAnimType = 'regular'
-      every('package', (element) => {
-        element.play(packagesAnimType)
-      })
+      get('package').forEach((element) => {
+        element.play(packagesAnimType);
+      });
       playerProtected = false
     })
   })
 
-  player.collides("Mode-filterdevs", (element) => {
+  player.onCollide("Mode-filterdevs", (element) => {
     play('soundItem3', {loop: false})
     // remove the helper now that it's received
     helperIndex = helpers.indexOf('Mode-filterdevs')
@@ -473,12 +476,12 @@ scene("game", () => {
         add([
           sprite("Mode-protected"),
           area(),
-          origin('botleft'),
+          anchor('botleft'),
           pos(width(), 80),
           move(LEFT, 130),
           "Mode-protected",
           fixed(),
-          solid(),
+          body({ isStatic: true }),
           scale(2.5),
           body()
         ])
@@ -501,12 +504,12 @@ scene("game", () => {
         add([
           sprite("Mode-filterdevs"),
           area(),
-          origin('botleft'),
+          anchor('botleft'),
           pos(width(), 80),
           move(LEFT, 150),
           "Mode-filterdevs",
           fixed(),
-          solid(),
+          body({ isStatic: true }),
           scale(2.5),
           body()
         ])
@@ -525,12 +528,12 @@ scene("game", () => {
         add([
           sprite("npmbox-dev"),
           area(),
-          origin('botleft'),
+          anchor('botleft'),
           pos(width(), height() - FLOOR_HEIGHT),
           move(LEFT, 150),
           "DevDeps",
           fixed(),
-          solid(),
+          body({ isStatic: true }),
           scale(0.5),
           { packageInfo: randomPackage }
         ])
@@ -561,14 +564,14 @@ scene("game", () => {
         railTimeout = 1
         add([
           sprite("rail2"),
-          origin('botleft'),
+          anchor('botleft'),
           pos(width() + 50, height() - (FLOOR_HEIGHT * 4)),
           move(LEFT, 180),
           "rail",
           scale(5),
           area(),
           fixed(),
-          solid()
+          body({ isStatic: true })
         ])
       }
     }
@@ -582,12 +585,12 @@ scene("game", () => {
         const PatchJumper = add([
           sprite("Patch-Jumper"),
           area(),
-          origin('botleft'),
+          anchor('botleft'),
           pos(width(), height() - (FLOOR_HEIGHT * 2.5)),
           move(LEFT, 200),
           "Patch-Jumper",
           fixed(),
-          solid(),
+          body({ isStatic: true }),
           scale(1)
         ])
       }
@@ -645,7 +648,7 @@ scene("game", () => {
     const npmPackage = add([
       sprite("npmbox", {anim: packagesAnimType}),
       area(),
-      origin('botleft'),
+      anchor('botleft'),
       pos(width(), height() - FLOOR_HEIGHT),
       move(LEFT, 240),
       "package",
@@ -658,7 +661,7 @@ scene("game", () => {
     add([
       text(randomPackage.name, { size: '22', font: 'apl386' }),
       move(LEFT, 240),
-      origin('botleft'),
+      anchor('botleft'),
       color(255, 255, 255),
       'label',
       pos(width()-20, height() - 100),
@@ -683,7 +686,7 @@ scene("lose", ({packageInfo}) => {
 		// pos(width() / 2, (height() / 8)),
     pos(width() / 2, 190),
     scale(1.2),
-		origin("center"),
+		anchor("center"),
 	])
 
   const vulnTitle = packageInfo.vulnerability
@@ -700,14 +703,14 @@ scene("lose", ({packageInfo}) => {
 		text(`YOUR SCORE: ${score}`),
 		pos(width() / 2, 50),
 		scale(0.6),
-		origin("center"),
+		anchor("center"),
 	])
 
   add([
     text(`HIGH SCORE: ${highScore}`),
     pos(width() / 2, 110),
     scale(0.6),
-    origin("center"),
+    anchor("center"),
     color(255, 63, 198),
   ])
 
@@ -722,14 +725,14 @@ scene("lose", ({packageInfo}) => {
 		pos(width() / 2, 300),
     area({ cursor: "pointer", height: 250 }),
 		scale(0.3),
-		origin("center"),
+		anchor("center"),
 	])
 
   add([
 		text('Media assets credit to: opengameart.org, craftpix.net and mixkit.co.'),
 		pos(width() / 2, height() / 2 + 320),
 		scale(0.2),
-		origin("center"),
+		anchor("center"),
 	])
 
   const restartGame = () => {
@@ -742,7 +745,7 @@ scene("lose", ({packageInfo}) => {
     pos(width() / 2, height() / 2 + 50),
 		area({ cursor: "pointer", }),
 		scale(0.5),
-		origin("center"),
+		anchor("center"),
     
 	])
 
@@ -751,7 +754,7 @@ scene("lose", ({packageInfo}) => {
     pos(width() / 2, height() / 2 + 130),
 		area({ cursor: "pointer", }),
 		scale(0.5),
-		origin("center"),
+		anchor("center"),
     
 	])
 
@@ -808,7 +811,7 @@ scene('credits-0', () => {
         font: 'apl386'
       }),
       pos(width()/2, height()/2),
-      origin('center')
+      anchor('center')
     ]);
   })
 
@@ -826,7 +829,7 @@ scene('credits-1', () => {
         font: 'apl386'
       }),
       pos(width()/2, height()/2),
-      origin('center')
+      anchor('center')
     ]);
   })
 
@@ -836,9 +839,9 @@ scene('credits-1', () => {
       sprite("dog-doberman", {anim: 'idle'}),
       rotate(0),
       area(),
-      origin('center'),
+      anchor('center'),
       scale(3),
-      cleanup()
+      // cleanup()
     ])
   })
 
@@ -855,7 +858,7 @@ scene('intro-1', () => {
           font: 'apl386'
         }),
         pos(width()/2, height()/4),
-        origin('center')
+        anchor('center')
       ]);
   })
 
@@ -866,7 +869,7 @@ scene('intro-1', () => {
           font: 'apl386'
         }),
         pos(width()/2, height()/2),
-        origin('center')
+        anchor('center')
       ]);
   })
 
@@ -877,7 +880,7 @@ scene('intro-1', () => {
           font: 'apl386'
         }),
         pos(width()/2, height()/2),
-        origin('center')
+        anchor('center')
       ]);
   })
 
@@ -888,7 +891,7 @@ scene('intro-1', () => {
           font: 'apl386'
         }),
         pos(width()/2, height()/2),
-        origin('center')
+        anchor('center')
       ]);
   })
 
@@ -899,11 +902,11 @@ scene('intro-1', () => {
         font: 'apl386'
       }),
       pos(width()/2, height() - (height()*0.1)),
-      origin('center')
+      anchor('center')
     ]);
   })
   
-  keyPress('space', () => {
+  onKeyPress('space', () => {
     go('game');
   });
 })
