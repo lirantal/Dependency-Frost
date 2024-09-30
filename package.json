@@ -6,7 +6,7 @@
     "build": "node build.js"
   },
   "dependencies": {
-    "@replit/database": "^2.0.1",
+    "@replit/database": "^2.0.5",
     "chokidar": "^3.5.2",
     "csurf": "^1.11.0",
     "esbuild": "^0.15.7",
