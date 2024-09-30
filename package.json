@@ -9,7 +9,7 @@
     "@replit/database": "^2.0.1",
     "chokidar": "^3.5.2",
     "csurf": "^1.11.0",
-    "esbuild": "^0.15.7",
+    "esbuild": "^0.23.1",
     "express": "^4.17.1",
     "kaplay": "^3001.0.0-beta.1",
     "stacktrace-js": "^2.0.2",
