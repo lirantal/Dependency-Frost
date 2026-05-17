@@ -18,6 +18,10 @@ Dependency Frost features a collection of media assets that helped build the gam
 Many thanks to the maintainers and developers of the Kaboom JavaScript gaming library:
 ![kaboom](learn/kaboom.png)
 
+## Contributing
+
+Please consult [CONTRIBUTING](./CONTRIBUTING.md) for guidelines on contributing to this project.
+
 # Author
 
 Liran Tal 
