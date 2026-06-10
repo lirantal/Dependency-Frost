@@ -1,4 +1,8 @@
 {
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
   "name": "kaboom-env",
   "scripts": {
     "start": "node run.js",
