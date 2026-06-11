@@ -1,8 +1,4 @@
 {
-  "publishConfig": {
-    "provenance": true,
-    "access": "public"
-  },
   "name": "kaboom-env",
   "scripts": {
     "start": "node run.js",
@@ -18,5 +14,9 @@
     "kaplay": "^3001.0.0-beta.1",
     "stacktrace-js": "^2.0.2",
     "ws": "^8.2.0"
+  },
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
   }
 }
